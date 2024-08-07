@@ -16,7 +16,7 @@ O projeto MERGE_CPTEC visa no aprofundamento de visualização de dados de preci
 
 ### Figura 1: Exemplo de Precipitação Acumulada Mensal
 
-![Precipitação Acumulada](Figuras/Acum_PRP_Dez_2023.png)
+![Precipitação Acumulada](Figuras/Acum_PRP_Mai_2024.png)
 
 ### Figura 2: Exemplo de Precipitação Acumulada Mensal - Região Norte
 
