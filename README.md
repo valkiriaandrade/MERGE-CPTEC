@@ -4,23 +4,22 @@ Este repositório contém scripts e dados relacionados ao projeto MERGE_CPTEC, q
 
 ## Descrição
 
-O projeto MERGE_CPTEC visa melhorar a estimativa de precipitação utilizando dados de várias fontes, como radares, satélites e pluviômetros. Este projeto é parte de uma colaboração com o Centro de Previsão de Tempo e Estudos Climáticos (CPTEC).
+O projeto MERGE_CPTEC visa no aprofundamento de visualização de dados de precipitação utilizando dados de várias fontes, como radares, satélites e pluviômetros. 
 
 ## Estrutura do Repositório
 
-- `scripts/`: Contém scripts utilizados para processar e analisar os dados.
-- `data/`: Contém dados brutos e processados.
-- `images/`: Contém figuras e gráficos gerados a partir dos dados.
+- `Scripts/`: Contém scripts utilizados para processar e analisar os dados.
+- `Figuras/`: Contém figuras geradas a partir dos dados.
 
 ## Imagens
 
-### Figura 1: Exemplo de Precipitação Acumulada 
+### Figura 1: Exemplo de Precipitação Acumulada Mensal
 
-![Precipitação Acumulada](images/precipitation_accumulated.png)
+![Precipitação Acumulada](Figuras/acumulado.png)
 
-### Figura 2: Exemplo de Precipitação Diária
+### Figura 2: Exemplo de Precipitação Acumulada Mensal - Região Norte
 
-![Precipitação Diária](images/precipitation_daily.png)
+![Precipitação Diária](Figuras/acumulado_norte.png)
 
 ## Como Utilizar
 
