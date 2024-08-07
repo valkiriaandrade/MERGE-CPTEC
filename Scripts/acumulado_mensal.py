@@ -9,7 +9,7 @@ from shapely.prepared import prep
 from matplotlib.patches import FancyArrowPatch
 
 
-grib_folder = '/jan'
+grib_folder = '/mai'
 acumulado_precipitacao = None
 arquivos_grib = [arquivo for arquivo in os.listdir(grib_folder) if arquivo.endswith('.grib2')]
 br_shapefile = 'BR_UF_2022.shp'
@@ -61,6 +61,6 @@ cbar.ax.set_yticklabels(cbar_labels)
 pcm = ax.contourf(lons, lats, acumulado_precipitacao, levels=boundaries, extend='max')
 ax.set_xlabel('Longitude')
 ax.set_ylabel('Latitude')
-ax.set_title('Acumulado de Precipitação - Janeiro 2024')
-fig.savefig('Acum_PRP_Jan_2024_i.png', dpi=300, bbox_inches='tight')
+ax.set_title('Acumulado de Precipitação - Maio 2024')
+fig.savefig('Acum_PRP_Mai_2024.png', dpi=300, bbox_inches='tight')
 plt.show()
