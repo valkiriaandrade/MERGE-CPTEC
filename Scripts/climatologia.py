@@ -34,6 +34,6 @@ states = cfeature.NaturalEarthFeature(category='cultural', name='admin_1_states_
 ax.add_feature(states, linestyle='-', linewidth=1, edgecolor='black')
 for spine in ax.spines.values():
     spine.set_visible(False)
-plt.title('Climatologia de Precipitação - Junho')
+plt.title('Climatologia de Precipitação - Outubro')
 plt.savefig('climatologia_PRP_outubro.png', dpi=300, bbox_inches='tight')
 plt.show()
