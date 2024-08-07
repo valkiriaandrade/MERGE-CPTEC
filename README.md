@@ -22,7 +22,7 @@ O projeto MERGE_CPTEC visa no aprofundamento de visualização de dados de preci
 
 ![Precipitação Diária](Figuras/Acum_PRP_Jul_2024_Norte.png)
 
-### Figura 3: Exemplo de Climatologia
+### Figura 3: Exemplo de Climatologia - Outubro
 
 ![Precipitação Diária](Figuras/climatologia_PRP_outubro.png)
 
