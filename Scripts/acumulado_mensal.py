@@ -9,7 +9,7 @@ from shapely.prepared import prep
 from matplotlib.patches import FancyArrowPatch
 
 
-grib_folder = '/mai'
+grib_folder = '/jan'
 acumulado_precipitacao = None
 arquivos_grib = [arquivo for arquivo in os.listdir(grib_folder) if arquivo.endswith('.grib2')]
 br_shapefile = 'BR_UF_2022.shp'
