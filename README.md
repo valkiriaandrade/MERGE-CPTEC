@@ -9,6 +9,7 @@ O projeto MERGE_CPTEC visa no aprofundamento de visualização de dados de preci
 ## Estrutura do Repositório
 
 - `Scripts/`: Contém scripts utilizados para processar e analisar os dados.
+- `Dados/`: Contém os dados brutos e processados.
 - `Figuras/`: Contém figuras geradas a partir dos dados.
 
 ## Imagens
