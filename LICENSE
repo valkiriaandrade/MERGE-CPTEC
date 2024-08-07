@@ -1,3 +1,9 @@
+# Licença para Código e Dados
+
+## Código
+
+O código neste repositório é licenciado sob a Licença MIT:
+
 MIT License
 
 Copyright (c) 2024 Valkiria Andrade
@@ -19,3 +25,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## Dados
+
+Os dados do produto MERGE do CPTEC neste repositório são de uso restrito e não podem ser comercializados. A utilização dos dados deve seguir as seguintes condições:
+
+- Não é permitido o uso comercial dos dados do produto MERGE do CPTEC.
+- Os dados não podem ser revendidos ou redistribuídos de forma comercial.
+- Para mais detalhes sobre os dados e suas restrições, consulte o documento [README do MERGE](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/READ_ME-MERGE.pdf).
+
+Qualquer dúvida sobre o uso dos dados, por favor entre em contato com o CPTEC/INPE através do email: atende.cptec@inpe.br.
