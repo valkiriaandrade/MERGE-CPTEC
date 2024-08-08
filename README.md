@@ -12,6 +12,18 @@ O projeto MERGE-CPTEC visa no aprofundamento de visualização de dados de preci
 - `Dados/`: Contém os dados brutos e processados.
 - `Figuras/`: Contém figuras geradas a partir dos dados.
 
+## Pré-requisitos
+
+Antes de executar os scripts, você precisará instalar as seguintes bibliotecas Python:
+
+- numpy
+- pandas
+- matplotlib
+- seaborn
+- cartopy
+- xarray
+- netCDF4
+  
 ## Imagens
 
 ### Figura 1: Exemplo de Precipitação Acumulada Mensal
