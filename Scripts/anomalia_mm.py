@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.colors as mcolors
 from shapely.vectorized import contains
 
-with xr.open_dataset('anomalia_precipitacao_jun.nc') as ds:
+with xr.open_dataset('anomalia_precipitacao_jul.nc') as ds:
     precip_anomalia = ds['anomalia_precipitacao'].load()
 shapefile = 'BR_UF_2022.shp'
 gdf = gpd.read_file(shapefile)
@@ -28,6 +28,6 @@ cbar = plt.colorbar(pcm, ax=ax, shrink=0.9, aspect=20, extend='both', ticks=leve
 cbar.set_label('Anomalia de Precipitação (mm)')
 ax.add_feature(cfeature.COASTLINE)
 ax.add_feature(cfeature.BORDERS, linestyle=':')
-plt.title('Anomalia de Precipitação - Junho 2024')
-plt.savefig('anomalia_precipitacao_junho_2024.png', dpi=300, bbox_inches='tight')
+plt.title('Anomalia de Precipitação - Julho 2024')
+plt.savefig('anomalia_precipitacao_julho_2024.png', dpi=300, bbox_inches='tight')
 plt.show()
