@@ -28,11 +28,11 @@ O projeto MERGE-CPTEC visa no aprofundamento de visualização de dados de preci
 
 ### Figura 3: Exemplo de Anomalia de Precipitação Mensal em mm
 
-![Anomalia mm](Figuras/brasil_anom_mai2.png)
+![Anomalia mm](Figuras/anomalia_precipitacao_julho_2024.png)
 
 ### Figura 3: Exemplo de Anomalia de Precipitação Mensal em Desvio Padrão
 
-![Anomalia desvio padrão](Figuras/anomalia_precipitacao_julho_2024.png)
+![Anomalia desvio padrão](Figuras/brasil_anom_mai2.png)
 
 ## Como Utilizar
 
