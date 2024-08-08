@@ -38,11 +38,11 @@ Antes de executar os scripts, você precisará instalar as seguintes bibliotecas
 
 ![Climatologia](Figuras/climatologia_PRP_outubro.png)
 
-### Figura 3: Exemplo de Anomalia de Precipitação Mensal em mm
+### Figura 4: Exemplo de Anomalia de Precipitação Mensal em mm
 
 ![Anomalia mm](Figuras/anomalia_precipitacao_julho_2024.png)
 
-### Figura 3: Exemplo de Anomalia de Precipitação Mensal em Desvio Padrão
+### Figura 5: Exemplo de Anomalia de Precipitação Mensal em Desvio Padrão
 
 ![Anomalia desvio padrão](Figuras/brasil_anom_mai2.png)
 
