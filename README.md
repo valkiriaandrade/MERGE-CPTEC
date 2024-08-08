@@ -1,4 +1,4 @@
-# MERGE_CPTEC
+# MERGE-CPTEC
 
 Este repositório contém scripts para a visualização dos dados de precipitação do produto MERGE do INPE/CPTEC. O produto MERGE combina observações de precipitação de várias fontes, como satélites e pluviômetros, para criar um conjunto de dados de alta resolução espacial e temporal.
 
