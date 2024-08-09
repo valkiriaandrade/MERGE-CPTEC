@@ -17,9 +17,9 @@ O projeto MERGE-CPTEC visa no aprofundamento de visualização de dados de preci
 Antes de executar os scripts, você precisará instalar as seguintes bibliotecas Python:
 
 - numpy
-- pandas
+- geopandas
 - matplotlib
-- seaborn
+- pygrib
 - cartopy
 - xarray
 - netCDF4
