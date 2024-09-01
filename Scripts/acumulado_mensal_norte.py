@@ -15,7 +15,7 @@ br_shapefile = 'BR_UF_2022.shp'
 brasil_norte = gpd.read_file(br_shapefile)
 brasil_norte = brasil_norte.to_crs(epsg=4326)
  do Brasil
-estados_norte = ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO']  # Códigos dos estados do norte
+estados_norte = ['AC', 'AP', 'AM', 'PA', 'RO', 'RR', 'TO']  
 brasil_norte = brasil_norte[brasil_norte['SIGLA_UF'].isin(estados_norte)]
 for arquivo_grib in arquivos_grib:
     grib_file = os.path.join(grib_folder, arquivo_grib)
