@@ -16,7 +16,6 @@ br_shapefile = 'BR_UF_2022.shp'
 brasil = gpd.read_file(br_shapefile)
 brasil = brasil.to_crs(epsg=4326)
 for arquivo_grib in arquivos_grib:
-    # Abra o arquivo GRIB2 com pygrib
     grib_file = os.path.join(grib_folder, arquivo_grib)
     grbs = pygrib.open(grib_file)
     grb = grbs.select(name='Precipitation')[0]
