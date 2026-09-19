@@ -1,70 +1,62 @@
 # MERGE-CPTEC
 
-Este repositório contém scripts para a visualização dos dados de precipitação do produto MERGE do INPE/CPTEC. O produto MERGE combina observações de precipitação de várias fontes, como satélites e pluviômetros, para criar um conjunto de dados de alta resolução espacial e temporal.
+Projeto de Valkiria Andrade para processamento e visualização meteorológica.
+Código organizado em pacote Python, com configuração pela linha de comando,
+testes de regressão e verificações automáticas no GitHub Actions.
 
-## Descrição
+## Instalação
 
-O projeto MERGE-CPTEC visa no aprofundamento de visualização de dados de precipitação utilizando o produto MERGE do CPTEC/INPE. 
+Python 3.10 ou superior. Na pasta deste repositório:
 
-## Estrutura do Repositório
+```bash
+python -m venv .venv
+# Windows PowerShell: .venv/Scripts/Activate.ps1
+# Linux/macOS: source .venv/bin/activate
+python -m pip install -e ".[dev]"
+```
 
-- `Scripts/`: Contém scripts utilizados para processar e analisar os dados.
-- `Dados/`: Contém os dados brutos e processados.
-- `Figuras/`: Contém figuras geradas a partir dos dados.
+WRF e MERGE precisam também de ecCodes: `python -m pip install -e ".[grib]"`.
+O pacote ecCodes oferece binários para Windows, Linux e macOS. NetCDF, cálculos e
+mapas não dependem desse extra. A leitura GRIB usa diretamente ecCodes, substituindo pygrib.
 
-## Pré-requisitos
+## Execução
 
-Antes de executar os scripts, você precisará instalar as seguintes bibliotecas Python:
+Exemplo (confira os nomes e metadados dos seus arquivos):
 
-- numpy
-- geopandas
-- matplotlib
-- pygrib
-- cartopy
-- xarray
-- netCDF4
-  
-## Imagens
+```bash
+merge-cptec --input Dados/mai --product accumulation --title "Acumulado — maio 2024" --output output/acumulado.png
+merge-cptec --help
+```
 
-### Figura 1: Exemplo de Precipitação Acumulada Mensal
+O acumulado soma os arquivos diários do diretório: mantenha apenas o período desejado, sem duplicatas. --product anomaly-netcdf exige --climatology e salva NetCDF; --product anomaly lê esse NetCDF para gerar mapa. --product climatology lê precacum. --region norte recorta o Norte (use --shapefile para máscara estadual). anomaly-spread usa dispersão espacial do campo, não desvio-padrão climatológico nem categorias probabilísticas.
 
-![Precipitação Acumulada mensal](Figuras/Acum_PRP_Mai_2024.png)
+`--shapefile caminho/BR_UF_2022.shp` aplica máscara e limites locais; o arquivo
+deve incluir seus arquivos auxiliares e CRS. ZIPs precisam ser extraídos.
+Sem shapefile, Cartopy pode baixar a cartografia Natural Earth no primeiro uso.
+`--title` configura o título e `--verbose` mostra detalhes dos erros.
+Mapas são salvos sem abrir janelas. A pasta de saída é criada automaticamente.
 
-### Figura 2: Exemplo de Precipitação Acumulada Mensal - Região Norte
+## Arquitetura e manutenção
 
-![Precipitação scumulada mensal - norte](Figuras/Acum_PRP_Jul_2024_Norte.png)
+- `src/merge_cptec/io.py`: leitura, fechamento de recursos e validação de grades.
+- `src/merge_cptec/cli.py`: argumentos e coordenação do processamento.
+- `src/merge_cptec/plotting.py`: renderização e máscara geográfica.
+- `Scripts/`: entradas com os nomes históricos, usando o pacote instalado.
+- `tests/`: dados sintéticos e regressões independentes de serviços externos.
+- `Dados/` e `Figuras/`: acervo original preservado.
 
-### Figura 3: Exemplo de Climatologia - Outubro
+As entradas históricas agora exigem os mesmos argumentos da CLI. Caminhos,
+datas e arquivos antes fixos no código devem ser informados explicitamente.
+Paletas e resolução foram padronizadas; figuras não são cópias pixel a pixel
+das versões antigas. Valores ausentes não são convertidos em zero.
 
-![Climatologia](Figuras/climatologia_PRP_outubro.png)
+```bash
+pytest -q
+ruff check src Scripts tests
+```
 
-### Figura 4: Exemplo de Anomalia de Precipitação Mensal em mm
+A CI executa testes em Python 3.10 e 3.12. Os testes usam pequenos dados
+sintéticos e cartografia local; a interpretação científica e a cobertura do
+período devem ser conferidas com os dados operacionais.
 
-![Anomalia mm](Figuras/anomalia_precipitacao_julho_2024.png)
-
-### Figura 5: Exemplo de Anomalia de Precipitação Mensal em Desvio Padrão
-
-![Anomalia desvio padrão](Figuras/brasil_anom_mai2.png)
-
-## Como Utilizar
-
-1. Clone este repositório:
-    ```bash
-    git clone https://github.com/valkiriaandrade/MERGE-CPTEC.git
-    ```
-
-2. Navegue até o diretório do projeto:
-    ```bash
-    cd MERGE-CPTEC
-    ```
-
-3. Execute os scripts conforme necessário.
-
-## Contribuições
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
-
-## Licença
-
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
+Histórico, descrição científica e imagens: [README original](docs/README-original.md).
