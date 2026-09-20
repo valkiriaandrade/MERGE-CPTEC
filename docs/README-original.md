@@ -28,23 +28,23 @@ Antes de executar os scripts, você precisará instalar as seguintes bibliotecas
 
 ### Figura 1: Exemplo de Precipitação Acumulada Mensal
 
-![Precipitação Acumulada mensal](Figuras/Acum_PRP_Mai_2024.png)
+![Precipitação Acumulada mensal](../Figuras/Acum_PRP_Mai_2024.png)
 
 ### Figura 2: Exemplo de Precipitação Acumulada Mensal - Região Norte
 
-![Precipitação scumulada mensal - norte](Figuras/Acum_PRP_Jul_2024_Norte.png)
+![Precipitação scumulada mensal - norte](../Figuras/Acum_PRP_Jul_2024_Norte.png)
 
 ### Figura 3: Exemplo de Climatologia - Outubro
 
-![Climatologia](Figuras/climatologia_PRP_outubro.png)
+![Climatologia](../Figuras/climatologia_PRP_outubro.png)
 
 ### Figura 4: Exemplo de Anomalia de Precipitação Mensal em mm
 
-![Anomalia mm](Figuras/anomalia_precipitacao_julho_2024.png)
+![Anomalia mm](../Figuras/anomalia_precipitacao_julho_2024.png)
 
 ### Figura 5: Exemplo de Anomalia de Precipitação Mensal em Desvio Padrão
 
-![Anomalia desvio padrão](Figuras/brasil_anom_mai2.png)
+![Anomalia desvio padrão](../Figuras/brasil_anom_mai2.png)
 
 ## Como Utilizar
 
@@ -66,5 +66,5 @@ Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull re
 
 ## Licença
 
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](../LICENSE) para mais detalhes.
 
