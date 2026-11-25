@@ -11,3 +11,8 @@ output/
 .coverage
 coverage.xml
 htmlcov/
+
+# Raw data downloaded by `make data` (sample files already committed stay tracked)
+data/merge_daily_*/
+data/MERGE_CPTEC_acum_*.nc
+*.part
