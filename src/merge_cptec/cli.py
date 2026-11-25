@@ -10,6 +10,7 @@ from pathlib import Path
 import xarray as xr
 
 from .arguments import build_parser, execute
+from .colour_scales import colour_scale
 from .io import files_in, read_field, save_netcdf, spatial
 from .labels import (
     SOURCE_CREDIT,
@@ -26,8 +27,6 @@ from .regions import ALIASES, REGIONS, normalize_region
 logger = logging.getLogger(__name__)
 
 PRODUCTS = ["accumulation", "anomaly-netcdf", "anomaly", "anomaly-spread", "climatology"]
-ANOMALY_LEVELS = [-400, -300, -200, -100, -75, -50, -25, -5, 0, 5, 25, 50, 75, 100, 200, 300, 400]
-AMOUNT_LEVELS = [0, 20, 50, 80, 100, 150, 200, 300, 400, 500]
 #: Anomaly NetCDF files bundled with the repository were written before v0.2 and
 #: use the original Portuguese variable name; both names are accepted.
 LEGACY_ANOMALY_VARIABLE = "anomalia_precipitacao"
@@ -64,17 +63,26 @@ def run(args: argparse.Namespace) -> None:
         values, lat, lon = field.values, field.lat.values, field.lon.values
         period = period or month_from_name(args.input)
     is_anomaly = args.product.startswith("anomaly")
-    region = REGIONS[args.region]
     units = units_label("mm")
+    scale = colour_scale(args.product, args.region)
+    if args.product == "anomaly-spread":
+        label = "Precipitation anomaly class (spatial mean ± k·σ)"
+    elif is_anomaly:
+        label = f"Precipitation anomaly ({units})"
+    else:
+        label = f"Precipitation ({units})"
+    region = REGIONS[args.region]
     plot_map(
         values,
         lat,
         lon,
         args.output,
         title=args.title or format_title(args.product, period, region.label, units),
-        label=f"Precipitation anomaly ({units})" if is_anomaly else f"Precipitation ({units})",
-        levels=ANOMALY_LEVELS if is_anomaly else AMOUNT_LEVELS,
-        cmap="BrBG" if is_anomaly else "YlGnBu",
+        label=label,
+        levels=scale.levels,
+        cmap=scale.cmap,
+        extend=scale.extend,
+        class_labels=scale.class_labels,
         shapefile=args.shapefile,
         spatial_spread=args.product == "anomaly-spread",
         states=list(region.states) if region.states else None,
