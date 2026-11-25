@@ -53,12 +53,12 @@ Before running the scripts, you will need to install the following Python librar
 
 1. Clone this repository:
     ```bash
-    git clone https://github.com/valkiriaandrade/MERGE-CPTEC.git
+    git clone https://github.com/valkiriaandrade/merge-rainfall-maps.git
     ```
 
 2. Go to the project folder:
     ```bash
-    cd MERGE-CPTEC
+    cd merge-rainfall-maps
     ```
 
 3. Run the scripts as needed.
