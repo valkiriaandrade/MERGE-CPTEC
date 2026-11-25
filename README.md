@@ -1,64 +1,146 @@
 # MERGE-CPTEC
 
-Weather data processing and visualisation project by Valkiria Andrade.
-The code is organised as a Python package with a command-line interface,
-regression tests and automated checks on GitHub Actions.
+**Monthly rainfall accumulation, climatology and anomaly maps of Brazil from CPTEC/INPE MERGE satellite–gauge precipitation, with one Python command.**
 
-<img src="Figuras/Acum_PRP_Mai_2024.png" alt="Accumulated rainfall map for Brazil, May 2024" width="480"/>
+[![CI](https://github.com/valkiriaandrade/MERGE-CPTEC/actions/workflows/tests.yml/badge.svg)](https://github.com/valkiriaandrade/MERGE-CPTEC/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/python-3.10%20%7C%203.12-blue)
+[![License: MIT (code)](https://img.shields.io/badge/license-MIT%20(code)-green)](LICENSE)
 
-## Installation
+## Gallery
 
-Python 3.10 or later. From this repository's folder:
+| | |
+|:-:|:-:|
+| <img src="figures/accumulated_precipitation_may_2024.png" alt="MERGE accumulated precipitation over Brazil, May 2024" width="420"/> | <img src="figures/precipitation_anomaly_jul_2024.png" alt="MERGE precipitation anomaly over Brazil, July 2024" width="420"/> |
+| Accumulated precipitation, May 2024: the Rio Grande do Sul flood month | Precipitation anomaly, July 2024 |
+| <img src="figures/accumulated_precipitation_jul_2024_north.png" alt="MERGE accumulated precipitation over northern Brazil, July 2024" width="420"/> | <img src="figures/precipitation_climatology_oct.png" alt="MERGE precipitation climatology for October" width="420"/> |
+| Accumulated precipitation, northern Brazil, July 2024 | October precipitation climatology |
+
+## What it does
+
+- **Accumulation**: sums the daily MERGE GRIB2 files in a folder into a period total (mm).
+- **Anomaly**: subtracts the monthly climatology (`precacum`) from that total and saves it as
+  NetCDF (`anomaly-netcdf`), then maps it in mm (`anomaly`) or in classes of the field's
+  spatial mean ± standard deviation (`anomaly-spread`).
+- **Climatology**: maps a monthly climatology file.
+- Masks the maps to Brazil or to the North region (AC, AP, AM, PA, RO, RR, TO) with the IBGE
+  state boundaries, and draws state borders, coastline, lat/lon labels, units and a source credit.
+- Checks its inputs strictly: grids must match, GRIB units must be mm (kg m⁻²), and missing
+  values propagate (days are never filled in).
+
+## Data source
+
+[**MERGE**](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/) is CPTEC/INPE's daily
+precipitation analysis for South America. It merges rain-gauge observations with GPM IMERG
+satellite estimates on a 0.1° (~10 km) grid and is a standard reference for monitoring rainfall
+in Brazil. See the [MERGE read-me](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/READ_ME-MERGE.pdf).
+
+Sample inputs in [`data/`](data/):
+
+| File / folder | Content |
+|---|---|
+| `merge_daily_may_2024/MERGE_CPTEC_202405DD.grib2` | Daily precipitation, May 2024 (31 files) |
+| `merge_daily_jul_2024/MERGE_CPTEC_202407DD.grib2` | Daily precipitation, July 2024 (31 files) |
+| `MERGE_CPTEC_acum_jul.nc`, `MERGE_CPTEC_acum_oct.nc` | July and October climatologies (`precacum`) |
+| `precipitation_anomaly_jul.nc`, `precipitation_anomaly_may.nc` | Pre-computed anomaly fields (mm) |
+| `BR_UF_2022/BR_UF_2022.zip` | IBGE 2022 state boundaries (zipped shapefile) |
+
+## Install
+
+Python 3.10 or later. GRIB2 files are read with [ecCodes](https://github.com/ecmwf/eccodes-python),
+which installs from pip with its binaries on Windows, Linux and macOS.
 
 ```bash
+git clone https://github.com/valkiriaandrade/MERGE-CPTEC.git
+cd MERGE-CPTEC
 python -m venv .venv
-# Windows PowerShell: .venv/Scripts/Activate.ps1
-# Linux/macOS: source .venv/bin/activate
-python -m pip install -e ".[dev]"
+source .venv/bin/activate          # Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]"  # or: make install
 ```
 
-WRF and MERGE also need ecCodes: `python -m pip install -e ".[grib]"`.
-The ecCodes package ships binaries for Windows, Linux and macOS. NetCDF, calculations and
-maps do not depend on this extra. GRIB files are read directly with ecCodes, replacing pygrib.
-
-## Usage
-
-Example (check your files' names and metadata):
+## Quick start
 
 ```bash
-merge-cptec --input Dados/mai --product accumulation --title "Accumulated rainfall — May 2024" --output output/accumulation.png
-merge-cptec --help
+SHP=data/BR_UF_2022/BR_UF_2022.zip
+
+# May 2024 accumulated precipitation over Brazil
+merge-cptec --product accumulation --input data/merge_daily_may_2024 \
+            --shapefile $SHP --output output/accumulation_may_2024.png
+
+# July 2024 accumulation for northern Brazil
+merge-cptec --product accumulation --region north --input data/merge_daily_jul_2024 \
+            --shapefile $SHP --output output/accumulation_jul_2024_north.png
+
+# July 2024 anomaly: compute the NetCDF, then map it
+merge-cptec --product anomaly-netcdf --input data/merge_daily_jul_2024 \
+            --climatology data/MERGE_CPTEC_acum_jul.nc --output output/anomaly_jul_2024.nc
+merge-cptec --product anomaly --input output/anomaly_jul_2024.nc --period "July 2024" \
+            --shapefile $SHP --output output/anomaly_jul_2024.png
+
+# Rebuild every figure in figures/
+make figures                       # or: python scripts/make_figures.py
 ```
 
-The accumulation sums the daily files in the folder: keep only the desired period, with no duplicates. `--product anomaly-netcdf` requires `--climatology` and saves a NetCDF; `--product anomaly` reads that NetCDF to draw the map. `--product climatology` reads `precacum`. `--region norte` crops northern Brazil (use `--shapefile` for a state mask). `anomaly-spread` uses the field's spatial spread, not a climatological standard deviation or probabilistic categories.
+## CLI options
 
-`--shapefile path/BR_UF_2022.shp` applies a mask and local boundaries; the file
-must come with its auxiliary files and CRS. ZIP files must be extracted first.
-Without a shapefile, Cartopy may download Natural Earth cartography on first use.
-`--title` sets the title and `--verbose` shows error details.
-Maps are saved without opening windows. The output folder is created automatically.
+`merge-cptec --help` prints the full list.
 
-## Architecture and maintenance
+| Option | Default | Description |
+|---|---|---|
+| `--product` | `accumulation` | `accumulation`, `anomaly-netcdf`, `anomaly`, `anomaly-spread` or `climatology` |
+| `--input PATH` | *required* | Folder of daily GRIB2 files (`accumulation`, `anomaly-netcdf`) or a NetCDF file (other products) |
+| `--output FILE` | *required* | Output PNG (or NetCDF for `anomaly-netcdf`); folders are created |
+| `--climatology FILE` | – | `precacum` climatology NetCDF, required by `anomaly-netcdf` |
+| `--region {brazil,north}` | `brazil` | Map domain; the Portuguese aliases `brasil` and `norte` are also accepted |
+| `--shapefile FILE` | – | State boundaries with a CRS, as `.shp` or zipped, for masking and borders (required by `anomaly-spread`); without it, Natural Earth borders are used |
+| `--period TEXT` | from file names | Period shown in the title, e.g. `"May 2024"` |
+| `--title TEXT` | built from the data | Custom map title |
+| `--dpi N` | `200` | PNG resolution |
+| `--verbose` | off | Debug logging and full tracebacks |
 
-- `src/merge_cptec/io.py`: reading, resource cleanup and grid validation.
-- `src/merge_cptec/cli.py`: arguments and processing coordination.
-- `src/merge_cptec/plotting.py`: rendering and geographic masking.
-- `Scripts/`: entry points with the historical names, using the installed package.
-- `tests/`: synthetic data and regression tests independent of external services.
-- `Dados/` and `Figuras/`: original data and figures, preserved.
+The `scripts/` folder has shortcuts that preset `--product` (and `--region`):
+`monthly_accumulation.py`, `monthly_accumulation_north.py`, `make_anomaly_netcdf.py`,
+`anomaly_mm.py`, `anomaly_spread.py` and `climatology.py`.
 
-The historical entry points now require the same arguments as the CLI. Paths,
-dates and files that used to be hard-coded must be passed explicitly.
-Palettes and resolution were standardised; figures are not pixel-perfect copies
-of the old versions. Missing values are not converted to zero.
+## Project structure
+
+```
+MERGE-CPTEC/
+├── data/                  # sample MERGE inputs and IBGE state boundaries
+├── figures/               # published maps (rebuilt with `make figures`)
+├── scripts/
+│   ├── make_figures.py    # regenerates every figure in figures/
+│   └── *.py               # shortcuts for the CLI
+├── src/merge_cptec/
+│   ├── cli.py             # command-line interface
+│   ├── processing.py      # accumulation and anomaly
+│   ├── io.py              # GRIB2/NetCDF reading and grid checks
+│   ├── plotting.py        # shared map style and rendering
+│   ├── labels.py          # titles, periods and unit labels
+│   └── regions.py         # map domains and region aliases
+├── tests/                 # pytest suite (synthetic data + one real GRIB2 file)
+├── docs/                  # validation notes and project history
+├── Makefile
+└── pyproject.toml
+```
+
+## Development
 
 ```bash
-pytest -q
-ruff check src Scripts tests
+make install   # editable install with dev tools + pre-commit hooks (ruff)
+make test      # pytest with coverage report
+make lint      # ruff check + ruff format --check
+make figures   # regenerate every figure in figures/ from data/
 ```
 
-CI runs the tests on Python 3.10 and 3.12. Tests use small synthetic data
-and local cartography; scientific interpretation and period coverage should be
-checked against operational data.
+On Windows without `make`, run the commands from the [Makefile](Makefile) directly, e.g.
+`python -m pytest -q --cov` or `python scripts/make_figures.py`.
 
-History, scientific background and images: [original README](docs/README-original.md).
+## License
+
+Code: [MIT](LICENSE) © Valkiria Andrade.
+MERGE data: CPTEC/INPE, non-commercial use only; see [LICENSE](LICENSE) and the
+[MERGE read-me](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/READ_ME-MERGE.pdf).
+
+---
+
+Project history: [original README](docs/README-original.md).

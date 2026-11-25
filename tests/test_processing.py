@@ -22,7 +22,7 @@ def test_grid_mismatch(monkeypatch):
         "read_grib",
         lambda path, name: (np.ones((2, 2)), np.ones((2, 2)) * path, np.zeros((2, 2)), ""),
     )
-    with pytest.raises(ValueError, match="Grades"):
+    with pytest.raises(ValueError, match="Grid mismatch"):
         processing.accumulate([1, 2])
 
 
@@ -35,7 +35,7 @@ def test_repository_grib_parameter_alias():
     from pathlib import Path
 
     pytest.importorskip("eccodes")
-    path = Path(__file__).parents[1] / "Dados/mai/MERGE_CPTEC_20240501.grib2"
+    path = Path(__file__).parents[1] / "data/merge_daily_may_2024/MERGE_CPTEC_20240501.grib2"
     total, lat, lon = processing.accumulate([path])
     assert total.shape == lat.shape == lon.shape == (924, 1001)
     assert np.nanmin(total) >= 0
@@ -50,7 +50,7 @@ def test_spread_requires_geographic_mask(tmp_path):
             [0, 1],
             [0, 1],
             tmp_path / "map.png",
-            title="Teste",
+            title="Test",
             label="mm",
             levels=[0, 5],
             cmap="BrBG",
