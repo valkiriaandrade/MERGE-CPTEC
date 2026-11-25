@@ -40,7 +40,11 @@ probability.
     +245 mm (the May 2024 flood). A May map without the flood signal cannot be May.
   The file was renamed to `precipitation_anomaly_jun.nc` (contents unchanged) and the
   figure to `precipitation_anomaly_spread_jun_2024.png`, titled June 2024.
-- Server vintage: the daily files, climatologies and July anomaly committed in 2024 differ
-  from the files on the server today (reprocessing). Committed files were kept unchanged;
-  the 10 May file and the May climatology come from the current server version.
+- Server vintage: CPTEC has reprocessed MERGE since 2024. All raw MERGE files in the
+  repository were switched to the current server versions with
+  `python scripts/download_data.py --months 2024-05 2024-07 --climatology oct --overwrite`
+  (61 daily GRIB2 files and the July/October climatologies), and the accumulation and
+  climatology figures were regenerated. The October climatology changed visibly (drier over
+  much of the Amazon and the north-east). The two pre-computed anomaly NetCDF files are
+  derived products, not server files, and were kept as they are.
 - Maps are drawn with filled contours (`contourf`) as in the original scripts.

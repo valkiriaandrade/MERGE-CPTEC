@@ -68,8 +68,8 @@ Downloaded files are git-ignored. A file missing on the server is reported by na
 script exits with an error after trying the rest. `make figures` refuses to build an
 accumulation from an incomplete month and asks you to run `make data`.
 
-> CPTEC has reprocessed MERGE since 2024, so files downloaded today differ slightly from the
-> 2024 copies committed here (see [docs/VALIDATION.md](docs/VALIDATION.md)).
+> The raw MERGE files committed here are the current (reprocessed) server versions, the same
+> files `make data` downloads. See [docs/VALIDATION.md](docs/VALIDATION.md).
 
 ## Install
 
