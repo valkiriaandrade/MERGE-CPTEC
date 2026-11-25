@@ -1,12 +1,14 @@
 # MERGE-CPTEC
 
-Projeto de Valkiria Andrade para processamento e visualização meteorológica.
-Código organizado em pacote Python, com configuração pela linha de comando,
-testes de regressão e verificações automáticas no GitHub Actions.
+Weather data processing and visualisation project by Valkiria Andrade.
+The code is organised as a Python package with a command-line interface,
+regression tests and automated checks on GitHub Actions.
 
-## Instalação
+<img src="Figuras/Acum_PRP_Mai_2024.png" alt="Accumulated rainfall map for Brazil, May 2024" width="480"/>
 
-Python 3.10 ou superior. Na pasta deste repositório:
+## Installation
+
+Python 3.10 or later. From this repository's folder:
 
 ```bash
 python -m venv .venv
@@ -15,48 +17,48 @@ python -m venv .venv
 python -m pip install -e ".[dev]"
 ```
 
-WRF e MERGE precisam também de ecCodes: `python -m pip install -e ".[grib]"`.
-O pacote ecCodes oferece binários para Windows, Linux e macOS. NetCDF, cálculos e
-mapas não dependem desse extra. A leitura GRIB usa diretamente ecCodes, substituindo pygrib.
+WRF and MERGE also need ecCodes: `python -m pip install -e ".[grib]"`.
+The ecCodes package ships binaries for Windows, Linux and macOS. NetCDF, calculations and
+maps do not depend on this extra. GRIB files are read directly with ecCodes, replacing pygrib.
 
-## Execução
+## Usage
 
-Exemplo (confira os nomes e metadados dos seus arquivos):
+Example (check your files' names and metadata):
 
 ```bash
-merge-cptec --input Dados/mai --product accumulation --title "Acumulado — maio 2024" --output output/acumulado.png
+merge-cptec --input Dados/mai --product accumulation --title "Accumulated rainfall — May 2024" --output output/accumulation.png
 merge-cptec --help
 ```
 
-O acumulado soma os arquivos diários do diretório: mantenha apenas o período desejado, sem duplicatas. --product anomaly-netcdf exige --climatology e salva NetCDF; --product anomaly lê esse NetCDF para gerar mapa. --product climatology lê precacum. --region norte recorta o Norte (use --shapefile para máscara estadual). anomaly-spread usa dispersão espacial do campo, não desvio-padrão climatológico nem categorias probabilísticas.
+The accumulation sums the daily files in the folder: keep only the desired period, with no duplicates. `--product anomaly-netcdf` requires `--climatology` and saves a NetCDF; `--product anomaly` reads that NetCDF to draw the map. `--product climatology` reads `precacum`. `--region norte` crops northern Brazil (use `--shapefile` for a state mask). `anomaly-spread` uses the field's spatial spread, not a climatological standard deviation or probabilistic categories.
 
-`--shapefile caminho/BR_UF_2022.shp` aplica máscara e limites locais; o arquivo
-deve incluir seus arquivos auxiliares e CRS. ZIPs precisam ser extraídos.
-Sem shapefile, Cartopy pode baixar a cartografia Natural Earth no primeiro uso.
-`--title` configura o título e `--verbose` mostra detalhes dos erros.
-Mapas são salvos sem abrir janelas. A pasta de saída é criada automaticamente.
+`--shapefile path/BR_UF_2022.shp` applies a mask and local boundaries; the file
+must come with its auxiliary files and CRS. ZIP files must be extracted first.
+Without a shapefile, Cartopy may download Natural Earth cartography on first use.
+`--title` sets the title and `--verbose` shows error details.
+Maps are saved without opening windows. The output folder is created automatically.
 
-## Arquitetura e manutenção
+## Architecture and maintenance
 
-- `src/merge_cptec/io.py`: leitura, fechamento de recursos e validação de grades.
-- `src/merge_cptec/cli.py`: argumentos e coordenação do processamento.
-- `src/merge_cptec/plotting.py`: renderização e máscara geográfica.
-- `Scripts/`: entradas com os nomes históricos, usando o pacote instalado.
-- `tests/`: dados sintéticos e regressões independentes de serviços externos.
-- `Dados/` e `Figuras/`: acervo original preservado.
+- `src/merge_cptec/io.py`: reading, resource cleanup and grid validation.
+- `src/merge_cptec/cli.py`: arguments and processing coordination.
+- `src/merge_cptec/plotting.py`: rendering and geographic masking.
+- `Scripts/`: entry points with the historical names, using the installed package.
+- `tests/`: synthetic data and regression tests independent of external services.
+- `Dados/` and `Figuras/`: original data and figures, preserved.
 
-As entradas históricas agora exigem os mesmos argumentos da CLI. Caminhos,
-datas e arquivos antes fixos no código devem ser informados explicitamente.
-Paletas e resolução foram padronizadas; figuras não são cópias pixel a pixel
-das versões antigas. Valores ausentes não são convertidos em zero.
+The historical entry points now require the same arguments as the CLI. Paths,
+dates and files that used to be hard-coded must be passed explicitly.
+Palettes and resolution were standardised; figures are not pixel-perfect copies
+of the old versions. Missing values are not converted to zero.
 
 ```bash
 pytest -q
 ruff check src Scripts tests
 ```
 
-A CI executa testes em Python 3.10 e 3.12. Os testes usam pequenos dados
-sintéticos e cartografia local; a interpretação científica e a cobertura do
-período devem ser conferidas com os dados operacionais.
+CI runs the tests on Python 3.10 and 3.12. Tests use small synthetic data
+and local cartography; scientific interpretation and period coverage should be
+checked against operational data.
 
-Histórico, descrição científica e imagens: [README original](docs/README-original.md).
+History, scientific background and images: [original README (Portuguese)](docs/README-original.md).
