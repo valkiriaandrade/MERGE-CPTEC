@@ -76,7 +76,7 @@ def test_period_from_provider_file_names():
     assert format_period(dates_from_names(names)) == "May 2024"
     assert format_period([]) is None
     assert month_from_name("data/MERGE_CPTEC_acum_oct.nc") == "October"
-    assert month_from_name("precipitation_anomaly_may.nc") == "May"
+    assert month_from_name("precipitation_anomaly_jun.nc") == "June"
     assert month_from_name("climatology.nc") is None
 
 

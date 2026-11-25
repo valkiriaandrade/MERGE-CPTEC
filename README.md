@@ -34,15 +34,42 @@ precipitation analysis for South America. It merges rain-gauge observations with
 satellite estimates on a 0.1° (~10 km) grid and is a standard reference for monitoring rainfall
 in Brazil. See the [MERGE read-me](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/READ_ME-MERGE.pdf).
 
-Sample inputs in [`data/`](data/):
+*Data: CPTEC/INPE – MERGE, https://ftp.cptec.inpe.br/modelos/tempo/MERGE/ (non-commercial use;
+see [LICENSE](LICENSE)).*
 
-| File / folder | Content |
-|---|---|
-| `merge_daily_may_2024/MERGE_CPTEC_202405DD.grib2` | Daily precipitation, May 2024 (31 files) |
-| `merge_daily_jul_2024/MERGE_CPTEC_202407DD.grib2` | Daily precipitation, July 2024 (31 files) |
-| `MERGE_CPTEC_acum_jul.nc`, `MERGE_CPTEC_acum_oct.nc` | July and October climatologies (`precacum`) |
-| `precipitation_anomaly_jul.nc`, `precipitation_anomaly_may.nc` | Pre-computed anomaly fields (mm) |
-| `BR_UF_2022/BR_UF_2022.zip` | IBGE 2022 state boundaries (zipped shapefile) |
+| File / folder in `data/` | Content | In the repo? |
+|---|---|---|
+| `merge_daily_may_2024/MERGE_CPTEC_202405DD.grib2` | Daily precipitation, May 2024 | 30 days committed; 10 May via `make data` |
+| `merge_daily_jul_2024/MERGE_CPTEC_202407DD.grib2` | Daily precipitation, July 2024 | committed sample (31 days) |
+| `MERGE_CPTEC_acum_jul.nc`, `MERGE_CPTEC_acum_oct.nc` | July and October climatologies (`precacum`) | committed |
+| `MERGE_CPTEC_acum_may.nc` | May climatology | `make data` |
+| `precipitation_anomaly_jul.nc`, `precipitation_anomaly_jun.nc` | Pre-computed anomaly fields (mm), July and June 2024 | committed |
+| `BR_UF_2022/BR_UF_2022.zip` | IBGE 2022 state boundaries (zipped shapefile) | committed |
+
+## Get the data
+
+Raw files that are not committed are downloaded from the public CPTEC/INPE server:
+
+```bash
+make data                          # or: python scripts/download_data.py
+```
+
+This fetches exactly what the README examples and `make figures` need (daily GRIB2 files for
+May and July 2024 and their monthly climatologies, plus the October climatology), skipping files
+that are already there. To download other periods:
+
+```bash
+python scripts/download_data.py --months 2024-06 2024-08   # daily files + climatologies
+python scripts/download_data.py --climatology jan feb      # climatologies only
+python scripts/download_data.py --dry-run                  # only list the URLs
+```
+
+Downloaded files are git-ignored. A file missing on the server is reported by name, and the
+script exits with an error after trying the rest. `make figures` refuses to build an
+accumulation from an incomplete month and asks you to run `make data`.
+
+> The raw MERGE files committed here are the current (reprocessed) server versions, the same
+> files `make data` downloads. See [docs/VALIDATION.md](docs/VALIDATION.md).
 
 ## Install
 
@@ -60,6 +87,7 @@ python -m pip install -e ".[dev]"  # or: make install
 ## Quick start
 
 ```bash
+make data                          # fetch the raw files that are not committed
 SHP=data/BR_UF_2022/BR_UF_2022.zip
 
 # May 2024 accumulated precipitation over Brazil
@@ -105,9 +133,10 @@ The `scripts/` folder has shortcuts that preset `--product` (and `--region`):
 
 ```
 MERGE-CPTEC/
-├── data/                  # sample MERGE inputs and IBGE state boundaries
+├── data/                  # sample MERGE inputs, IBGE boundaries; `make data` adds the rest
 ├── figures/               # published maps (rebuilt with `make figures`)
 ├── scripts/
+│   ├── download_data.py   # downloads raw data from CPTEC/INPE (`make data`)
 │   ├── make_figures.py    # regenerates every figure in figures/
 │   └── *.py               # shortcuts for the CLI
 ├── src/merge_cptec/
@@ -129,11 +158,15 @@ MERGE-CPTEC/
 make install   # editable install with dev tools + pre-commit hooks (ruff)
 make test      # pytest with coverage report
 make lint      # ruff check + ruff format --check
+make data      # download the raw data from CPTEC/INPE (manual step, never run in CI)
 make figures   # regenerate every figure in figures/ from data/
 ```
 
 On Windows without `make`, run the commands from the [Makefile](Makefile) directly, e.g.
 `python -m pytest -q --cov` or `python scripts/make_figures.py`.
+
+Tests and CI never download anything: they use small files committed in the repo, and a test
+fixture blocks network access. `make data` is a manual step.
 
 ## License
 

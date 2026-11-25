@@ -11,7 +11,9 @@ the existing image is kept.
 from __future__ import annotations
 
 import argparse
+import calendar
 import logging
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -47,10 +49,10 @@ FIGURES = [
         period="July 2024",
     ),
     Figure(
-        "precipitation_anomaly_spread_may_2024.png",
+        "precipitation_anomaly_spread_jun_2024.png",
         "anomaly-spread",
-        "precipitation_anomaly_may.nc",
-        period="May 2024",
+        "precipitation_anomaly_jun.nc",
+        period="June 2024",
     ),
     Figure(
         "precipitation_climatology_oct.png",
@@ -61,6 +63,19 @@ FIGURES = [
 ]
 
 
+def incomplete_month(folder: Path) -> str | None:
+    """Describe a daily folder that does not hold every day of its month, else None."""
+    match = re.search(r"_([a-z]{3})_(\d{4})$", folder.name)
+    if not match or not folder.is_dir():
+        return None
+    month = [m.lower() for m in calendar.month_abbr].index(match.group(1))
+    expected = calendar.monthrange(int(match.group(2)), month)[1]
+    found = len(list(folder.glob("*.grib2")))
+    if found != expected:
+        return f"{folder.name} has {found} of {expected} daily files"
+    return None
+
+
 def build(data_dir: Path, figures_dir: Path, dpi: int) -> list[str]:
     """Rebuild all figures with available data; return the names that were skipped."""
     skipped = []
@@ -69,6 +84,11 @@ def build(data_dir: Path, figures_dir: Path, dpi: int) -> list[str]:
         source = data_dir / figure.source
         if not source.exists():
             logger.warning("Skipping %s (kept existing image): missing %s", figure.output, source)
+            skipped.append(figure.output)
+            continue
+        problem = incomplete_month(source)
+        if problem:
+            logger.error("Skipping %s: %s; run `make data` first", figure.output, problem)
             skipped.append(figure.output)
             continue
         logger.info("Building %s", figure.output)

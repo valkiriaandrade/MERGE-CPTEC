@@ -47,7 +47,7 @@ Before running the scripts, you will need to install the following Python librar
 
 ### Figure 5: Example of monthly precipitation anomaly in standard deviations
 
-![Anomaly in standard deviations](../figures/precipitation_anomaly_spread_may_2024.png)
+![Anomaly in standard deviations](../figures/precipitation_anomaly_spread_jun_2024.png)
 
 ## How to use
 
