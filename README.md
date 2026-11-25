@@ -40,10 +40,11 @@ see [LICENSE](LICENSE)).*
 | File / folder in `data/` | Content | In the repo? |
 |---|---|---|
 | `merge_daily_may_2024/MERGE_CPTEC_202405DD.grib2` | Daily precipitation, May 2024 | 30 days committed; 10 May via `make data` |
+| `merge_daily_jun_2024/MERGE_CPTEC_202406DD.grib2` | Daily precipitation, June 2024 | `make data` |
 | `merge_daily_jul_2024/MERGE_CPTEC_202407DD.grib2` | Daily precipitation, July 2024 | committed sample (31 days) |
 | `MERGE_CPTEC_acum_jul.nc`, `MERGE_CPTEC_acum_oct.nc` | July and October climatologies (`precacum`) | committed |
-| `MERGE_CPTEC_acum_may.nc` | May climatology | `make data` |
-| `precipitation_anomaly_jul.nc`, `precipitation_anomaly_jun.nc` | Pre-computed anomaly fields (mm), July and June 2024 | committed |
+| `MERGE_CPTEC_acum_may.nc`, `MERGE_CPTEC_acum_jun.nc` | May and June climatologies | `make data` |
+| `precipitation_anomaly_jul.nc`, `precipitation_anomaly_jun.nc` | Anomaly fields (mm), July and June 2024, computed from the daily files and climatology | committed; rebuilt by `make figures` |
 | `BR_UF_2022/BR_UF_2022.zip` | IBGE 2022 state boundaries (zipped shapefile) | committed |
 
 ## Get the data
@@ -55,11 +56,11 @@ make data                          # or: python scripts/download_data.py
 ```
 
 This fetches exactly what the README examples and `make figures` need (daily GRIB2 files for
-May and July 2024 and their monthly climatologies, plus the October climatology), skipping files
-that are already there. To download other periods:
+May, June and July 2024 and their monthly climatologies, plus the October climatology), skipping
+files that are already there. To download other periods:
 
 ```bash
-python scripts/download_data.py --months 2024-06 2024-08   # daily files + climatologies
+python scripts/download_data.py --months 2024-08 2024-09   # daily files + climatologies
 python scripts/download_data.py --climatology jan feb      # climatologies only
 python scripts/download_data.py --dry-run                  # only list the URLs
 ```
@@ -67,6 +68,10 @@ python scripts/download_data.py --dry-run                  # only list the URLs
 Downloaded files are git-ignored. A file missing on the server is reported by name, and the
 script exits with an error after trying the rest. `make figures` refuses to build an
 accumulation from an incomplete month and asks you to run `make data`.
+
+`make figures` first recomputes the two anomaly NetCDF files from the daily files and the
+monthly climatology (`merge-cptec --product anomaly-netcdf`), so the anomaly maps always follow
+the raw data. Without those inputs it keeps the committed copies.
 
 > The raw MERGE files committed here are the current (reprocessed) server versions, the same
 > files `make data` downloads. See [docs/VALIDATION.md](docs/VALIDATION.md).

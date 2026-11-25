@@ -35,8 +35,10 @@ def test_default_plan_covers_make_figures(download_module):
     for mon in download_module.FIGURE_CLIMATOLOGIES:
         index = download_module.MONTH_ABBR.index(mon) + 1
         planned.add(download_module.climatology_item(index).path.name)
-    derived = {"precipitation_anomaly_jul.nc", "precipitation_anomaly_jun.nc"}
+    derived = {a.output for a in make_figures.ANOMALY_FILES}
     needed = {f.source for f in make_figures.FIGURES} - derived
+    for anomaly in make_figures.ANOMALY_FILES:
+        needed |= {anomaly.daily, anomaly.climatology}
     assert needed <= planned
 
 
@@ -85,3 +87,35 @@ def test_make_figures_refuses_incomplete_month(tmp_path):
     (folder / "MERGE_CPTEC_20240229.grib2").touch()
     assert make_figures.incomplete_month(folder) is None
     assert make_figures.incomplete_month(tmp_path / "precipitation_anomaly_jun.nc") is None
+
+
+def test_make_figures_rebuilds_anomalies_before_maps(tmp_path, monkeypatch):
+    from conftest import load_script
+
+    make_figures = load_script("make_figures")
+    for name in ("merge_daily_jul_2024", "merge_daily_jun_2024"):
+        (tmp_path / name).mkdir()
+    for day in range(1, 32):
+        (tmp_path / "merge_daily_jul_2024" / f"MERGE_CPTEC_202407{day:02d}.grib2").touch()
+    for day in range(1, 30):  # June incomplete: 29 of 30 days
+        (tmp_path / "merge_daily_jun_2024" / f"MERGE_CPTEC_202406{day:02d}.grib2").touch()
+    for name in ("MERGE_CPTEC_acum_jul.nc", "MERGE_CPTEC_acum_jun.nc"):
+        (tmp_path / name).touch()
+    for anomaly in make_figures.ANOMALY_FILES:
+        (tmp_path / anomaly.output).touch()  # committed copies
+    calls = []
+    monkeypatch.setattr(make_figures, "merge_cptec", calls.append)
+
+    kept = make_figures.build_anomalies(tmp_path)
+    assert kept == ["precipitation_anomaly_jun.nc"]
+    assert len(calls) == 1
+    args = calls[0]
+    assert args[args.index("--product") + 1] == "anomaly-netcdf"
+    assert args[args.index("--input") + 1] == str(tmp_path / "merge_daily_jul_2024")
+    assert args[args.index("--output") + 1] == str(tmp_path / "precipitation_anomaly_jul.nc")
+
+    calls.clear()
+    make_figures.build(tmp_path, tmp_path / "figures", dpi=50)
+    products = [a[a.index("--product") + 1] for a in calls]
+    assert products[0] == "anomaly-netcdf"
+    assert products.index("anomaly") > 0 and "anomaly-netcdf" not in products[1:]
