@@ -1,20 +1,20 @@
 # MERGE-CPTEC
 
-Este repositório contém scripts para a visualização dos dados de precipitação do produto MERGE do INPE/CPTEC. O produto MERGE combina observações de precipitação de várias fontes, como satélites e pluviômetros, para criar um conjunto de dados de alta resolução espacial e temporal.
+This repository contains scripts for visualising precipitation data from INPE/CPTEC's MERGE product. MERGE combines precipitation observations from several sources, such as satellites and rain gauges, to create a dataset with high spatial and temporal resolution.
 
-## Descrição
+## Description
 
-O projeto MERGE-CPTEC visa no aprofundamento de visualização de dados de precipitação utilizando o produto MERGE do CPTEC/INPE. 
+The MERGE-CPTEC project focuses on visualising precipitation data using CPTEC/INPE's MERGE product.
 
-## Estrutura do Repositório
+## Repository structure
 
-- `Scripts/`: Contém scripts utilizados para processar e analisar os dados.
-- `Dados/`: Contém os dados brutos e processados.
-- `Figuras/`: Contém figuras geradas a partir dos dados.
+- `Scripts/`: scripts used to process and analyse the data.
+- `Dados/`: raw and processed data.
+- `Figuras/`: figures generated from the data.
 
-## Pré-requisitos
+## Prerequisites
 
-Antes de executar os scripts, você precisará instalar as seguintes bibliotecas Python:
+Before running the scripts, you will need to install the following Python libraries:
 
 - numpy
 - geopandas
@@ -24,47 +24,46 @@ Antes de executar os scripts, você precisará instalar as seguintes bibliotecas
 - xarray
 - netCDF4
 
-## Imagens
+## Images
 
-### Figura 1: Exemplo de Precipitação Acumulada Mensal
+### Figure 1: Example of monthly accumulated precipitation
 
-![Precipitação Acumulada mensal](../Figuras/Acum_PRP_Mai_2024.png)
+![Monthly accumulated precipitation](../Figuras/Acum_PRP_Mai_2024.png)
 
-### Figura 2: Exemplo de Precipitação Acumulada Mensal - Região Norte
+### Figure 2: Example of monthly accumulated precipitation - North region
 
-![Precipitação scumulada mensal - norte](../Figuras/Acum_PRP_Jul_2024_Norte.png)
+![Monthly accumulated precipitation - North](../Figuras/Acum_PRP_Jul_2024_Norte.png)
 
-### Figura 3: Exemplo de Climatologia - Outubro
+### Figure 3: Example of climatology - October
 
-![Climatologia](../Figuras/climatologia_PRP_outubro.png)
+![Climatology](../Figuras/climatologia_PRP_outubro.png)
 
-### Figura 4: Exemplo de Anomalia de Precipitação Mensal em mm
+### Figure 4: Example of monthly precipitation anomaly in mm
 
-![Anomalia mm](../Figuras/anomalia_precipitacao_julho_2024.png)
+![Anomaly in mm](../Figuras/anomalia_precipitacao_julho_2024.png)
 
-### Figura 5: Exemplo de Anomalia de Precipitação Mensal em Desvio Padrão
+### Figure 5: Example of monthly precipitation anomaly in standard deviations
 
-![Anomalia desvio padrão](../Figuras/brasil_anom_mai2.png)
+![Anomaly in standard deviations](../Figuras/brasil_anom_mai2.png)
 
-## Como Utilizar
+## How to use
 
-1. Clone este repositório:
+1. Clone this repository:
     ```bash
     git clone https://github.com/valkiriaandrade/MERGE-CPTEC.git
     ```
 
-2. Navegue até o diretório do projeto:
+2. Go to the project folder:
     ```bash
     cd MERGE-CPTEC
     ```
 
-3. Execute os scripts conforme necessário.
+3. Run the scripts as needed.
 
-## Contribuições
+## Contributing
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
+Contributions are welcome! Feel free to open issues and pull requests.
 
-## Licença
+## License
 
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](../LICENSE) para mais detalhes.
-
+This project is licensed under the MIT License. See the [LICENSE](../LICENSE) file for details.
