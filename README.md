@@ -1,8 +1,8 @@
-# MERGE-CPTEC
+# Rainfall Maps for Brazil (MERGE/CPTEC)
 
 **Monthly rainfall accumulation, climatology and anomaly maps of Brazil from CPTEC/INPE MERGE satellite–gauge precipitation, with one Python command.**
 
-[![CI](https://github.com/valkiriaandrade/MERGE-CPTEC/actions/workflows/tests.yml/badge.svg)](https://github.com/valkiriaandrade/MERGE-CPTEC/actions/workflows/tests.yml)
+[![CI](https://github.com/valkiriaandrade/merge-rainfall-maps/actions/workflows/tests.yml/badge.svg)](https://github.com/valkiriaandrade/merge-rainfall-maps/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.12-blue)
 [![License: MIT (code)](https://img.shields.io/badge/license-MIT%20(code)-green)](LICENSE)
 
@@ -82,8 +82,8 @@ Python 3.10 or later. GRIB2 files are read with [ecCodes](https://github.com/ecm
 which installs from pip with its binaries on Windows, Linux and macOS.
 
 ```bash
-git clone https://github.com/valkiriaandrade/MERGE-CPTEC.git
-cd MERGE-CPTEC
+git clone https://github.com/valkiriaandrade/merge-rainfall-maps.git
+cd merge-rainfall-maps
 python -m venv .venv
 source .venv/bin/activate          # Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"  # or: make install
