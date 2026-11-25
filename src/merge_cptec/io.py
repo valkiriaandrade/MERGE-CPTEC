@@ -141,7 +141,12 @@ def read_grib(path: str | Path, name: str) -> tuple[np.ndarray, np.ndarray, np.n
 
 
 def save_netcdf(field: xr.DataArray, output: str | Path) -> None:
-    """Write ``field`` to ``output``, creating parent folders as needed."""
+    """Write ``field`` to ``output``, creating parent folders as needed.
+
+    Floating-point values are stored as 32-bit floats (ample precision for rainfall in
+    mm, half the file size); coordinates are written unchanged.
+    """
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    field.to_netcdf(output, engine="h5netcdf")
+    encoding = {field.name: {"dtype": "float32"}} if field.dtype.kind == "f" else None
+    field.to_netcdf(output, engine="h5netcdf", encoding=encoding)

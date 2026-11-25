@@ -61,4 +61,7 @@ probability.
     (Amazonas mean, July −47 → −18 mm; June −60 → −22 mm). The southern pattern stays.
   - The July anomaly and June categories maps were regenerated. The rebuilt files use the
     variable name `precipitation_anomaly`; the old name is still read.
+  - `anomaly-netcdf` stores the values as 32-bit floats, like the original files (coordinates
+    unchanged). Against a 64-bit write the values differ by at most 0.00003 mm, the maps are
+    byte-identical, and each file is 1.5 MB instead of 3.1 MB.
 - Maps are drawn with filled contours (`contourf`) as in the original scripts.

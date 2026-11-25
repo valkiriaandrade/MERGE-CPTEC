@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import xarray as xr
 
-from merge_cptec.io import align_exact, files_in, read_field, spatial
+from merge_cptec.io import align_exact, files_in, read_field, save_netcdf, spatial
 
 
 def test_empty_directory(tmp_path):
@@ -67,3 +67,21 @@ def test_offline_map_and_figure_cleanup(tmp_path):
     )
     assert output.read_bytes().startswith(b"\x89PNG")
     assert not plt.get_fignums()
+
+
+def test_save_netcdf_stores_values_as_float32(tmp_path):
+    lat = np.array([-10.05, -9.95])
+    field = xr.DataArray(
+        np.array([[1.25, np.nan], [-3.5, 400.123456]]),
+        dims=("lat", "lon"),
+        coords={"lat": lat, "lon": [-50.05, -49.95]},
+        name="precipitation_anomaly",
+    )
+    output = tmp_path / "out" / "anomaly.nc"
+    save_netcdf(field, output)
+    with xr.open_dataset(output, engine="h5netcdf") as saved:
+        values = saved["precipitation_anomaly"]
+        assert values.encoding["dtype"] == np.float32
+        assert saved.lat.dtype == np.float64 and np.array_equal(saved.lat, lat)
+        np.testing.assert_allclose(values, field, rtol=1e-6)
+        assert np.isnan(values[0, 1])
