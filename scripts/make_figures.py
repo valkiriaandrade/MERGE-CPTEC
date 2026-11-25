@@ -4,7 +4,10 @@ Usage::
 
     python scripts/make_figures.py [--data-dir data] [--figures-dir figures] [--dpi 200]
 
-Figures whose source data is not in the repository are skipped with a warning and
+The anomaly NetCDF files are rebuilt first from the daily GRIB2 files and the monthly
+climatology (``merge-cptec --product anomaly-netcdf``), so the anomaly maps always follow
+the raw data. If those inputs are missing or incomplete (run ``make data``), the existing
+NetCDF file is kept. Figures whose source data is missing are skipped with a warning and
 the existing image is kept.
 """
 
@@ -33,6 +36,20 @@ class Figure:
     region: str = "brazil"
     period: str | None = None
 
+
+@dataclass(frozen=True)
+class AnomalyFile:
+    """An anomaly NetCDF file and the raw inputs it is computed from."""
+
+    output: str
+    daily: str
+    climatology: str
+
+
+ANOMALY_FILES = [
+    AnomalyFile("precipitation_anomaly_jul.nc", "merge_daily_jul_2024", "MERGE_CPTEC_acum_jul.nc"),
+    AnomalyFile("precipitation_anomaly_jun.nc", "merge_daily_jun_2024", "MERGE_CPTEC_acum_jun.nc"),
+]
 
 FIGURES = [
     Figure("accumulated_precipitation_may_2024.png", "accumulation", "merge_daily_may_2024"),
@@ -76,8 +93,33 @@ def incomplete_month(folder: Path) -> str | None:
     return None
 
 
+def build_anomalies(data_dir: Path) -> list[str]:
+    """Recompute each anomaly NetCDF from its raw inputs; return the ones kept as they were."""
+    kept = []
+    for anomaly in ANOMALY_FILES:
+        daily, climatology = data_dir / anomaly.daily, data_dir / anomaly.climatology
+        missing = [str(path) for path in (daily, climatology) if not path.exists()]
+        problem = f"missing {', '.join(missing)}" if missing else incomplete_month(daily)
+        if problem:
+            logger.warning(
+                "Keeping existing %s: %s; run `make data` to rebuild it", anomaly.output, problem
+            )
+            kept.append(anomaly.output)
+            continue
+        logger.info("Computing %s from %s and %s", anomaly.output, daily.name, climatology.name)
+        args = [
+            "--input", str(daily),
+            "--product", "anomaly-netcdf",
+            "--climatology", str(climatology),
+            "--output", str(data_dir / anomaly.output),
+        ]  # fmt: skip
+        merge_cptec(args)
+    return kept
+
+
 def build(data_dir: Path, figures_dir: Path, dpi: int) -> list[str]:
     """Rebuild all figures with available data; return the names that were skipped."""
+    build_anomalies(data_dir)
     skipped = []
     shapefile = data_dir / "BR_UF_2022" / "BR_UF_2022.zip"
     for figure in FIGURES:

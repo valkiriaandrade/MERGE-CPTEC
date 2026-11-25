@@ -64,4 +64,4 @@ def execute(
         if args.verbose:
             raise
         parser.exit(2, f"Error: {error}\n")
-    logger.info("Map written to %s", args.output)
+    logger.info("Written to %s", args.output)

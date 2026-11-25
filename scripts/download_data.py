@@ -32,8 +32,9 @@ from pathlib import Path
 BASE_URL = "https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM"
 ROOT = Path(__file__).resolve().parents[1]
 USER_AGENT = "merge-cptec-data-download"
-#: Months whose daily files the figures and README examples use.
-FIGURE_MONTHS = ["2024-05", "2024-07"]
+#: Months whose daily files the figures and README examples use (June and July also
+#: feed the two anomaly NetCDF files that `make figures` rebuilds).
+FIGURE_MONTHS = ["2024-05", "2024-06", "2024-07"]
 #: Extra climatologies used directly by a figure (October climatology map).
 FIGURE_CLIMATOLOGIES = ["oct"]
 MONTH_ABBR = [m.lower() for m in calendar.month_abbr[1:]]

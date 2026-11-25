@@ -38,13 +38,30 @@ probability.
     MERGE since 2024, so exact equality is not possible);
   - mean anomaly over Rio Grande do Sul: stored file +12 mm, June 2024 +18 mm, May 2024
     +245 mm (the May 2024 flood). A May map without the flood signal cannot be May.
-  The file was renamed to `precipitation_anomaly_jun.nc` (contents unchanged) and the
+  The file was renamed to `precipitation_anomaly_jun.nc` (contents unchanged at that step) and the
   figure to `precipitation_anomaly_spread_jun_2024.png`, titled June 2024.
 - Server vintage: CPTEC has reprocessed MERGE since 2024. All raw MERGE files in the
   repository were switched to the current server versions with
   `python scripts/download_data.py --months 2024-05 2024-07 --climatology oct --overwrite`
   (61 daily GRIB2 files and the July/October climatologies), and the accumulation and
   climatology figures were regenerated. The October climatology changed visibly (drier over
-  much of the Amazon and the north-east). The two pre-computed anomaly NetCDF files are
-  derived products, not server files, and were kept as they are.
+  much of the Amazon and the north-east). The two anomaly NetCDF files are derived
+  products, not server files; see the next point.
+- The anomaly NetCDF files are now rebuilt from the raw data. `make data` also downloads
+  June 2024 (30 daily files) and the June climatology, and `make figures` first runs
+  `merge-cptec --product anomaly-netcdf` for July (`merge_daily_jul_2024` +
+  `MERGE_CPTEC_acum_jul.nc`) and June (`merge_daily_jun_2024` + `MERGE_CPTEC_acum_jun.nc`),
+  then draws the maps. Without those inputs it keeps the committed files.
+  - Same calculation: run on the July 2024 files as committed before the server switch, the
+    command reproduces the previous `precipitation_anomaly_jul.nc` to within 0.00002 mm
+    (float rounding).
+  - With the current server files the fields change: correlation with the previous files
+    0.83 (July) and 0.67 (June); mean over the grid −29 → −19 mm (July) and −24 → +5 mm
+    (June). The largest change is over the Amazon, where the dry anomalies are much weaker
+    (Amazonas mean, July −47 → −18 mm; June −60 → −22 mm). The southern pattern stays.
+  - The July anomaly and June categories maps were regenerated. The rebuilt files use the
+    variable name `precipitation_anomaly`; the old name is still read.
+  - `anomaly-netcdf` stores the values as 32-bit floats, like the original files (coordinates
+    unchanged). Against a 64-bit write the values differ by at most 0.00003 mm, the maps are
+    byte-identical, and each file is 1.5 MB instead of 3.1 MB.
 - Maps are drawn with filled contours (`contourf`) as in the original scripts.
