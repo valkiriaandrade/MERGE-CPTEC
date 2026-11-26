@@ -105,7 +105,11 @@ probability.
     read-me, and a `history` line with the command (no timestamp, so a rebuild gives the same
     bytes);
   - variable: `long_name` ("precipitation anomaly: July 2024 total minus the 1998-2024 July
-    mean") and `units` = mm; `lat`/`lon` get their CF `standard_name`.
+    mean") and `units` = mm; `lat`/`lon` get their CF `standard_name` and no longer carry a
+    `_FillValue` (CF coordinate variables have no missing values; they had none);
+  - with `--allow-partial`, a month with missing days is named by its date range and the
+    `comment` says how many days are present; daily files without dates in their names give
+    "unknown period" and no `time_coverage_*` attributes.
 - Both committed files were rebuilt with `make figures`: the values, data type and grid are
   identical to the previous files (compared element by element); only the attributes are new.
   A second `make figures` run gives the same bytes.

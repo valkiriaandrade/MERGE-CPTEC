@@ -7,6 +7,7 @@ from test_pipeline import climatology, month_folder, template  # noqa: F401  (fi
 
 from merge_cptec import cli
 from merge_cptec.labels import CLIMATOLOGY_PERIOD
+from merge_cptec.processing import anomaly_global_attributes
 
 DOI = "https://doi.org/10.1175/2010WAF2222325.1"
 
@@ -27,8 +28,10 @@ def check_metadata(path, period, start, end, month, days):
         assert attrs["climatology_month"] == month
         assert attrs["climatology_file"] == f"MERGE_CPTEC_acum_{month[:3].lower()}.nc"
         assert "1998-2024" in attrs["comment"] and "read-me" in attrs["comment"]
+        assert "present" not in attrs["comment"]  # a whole month: no missing-days note
         # data source and reference
-        assert "CPTEC/INPE MERGE" in attrs["source"] and "CPTEC/INPE" in attrs["institution"]
+        assert "CPTEC/INPE MERGE" in attrs["source"]
+        assert attrs["institution"].startswith("CPTEC/INPE (Centro de Previsão")
         assert attrs["references"].startswith("Rozante, J. R.") and "(2010)" in attrs["references"]
         assert DOI in attrs["references"]
         # variable: CF long_name and units
@@ -41,6 +44,8 @@ def check_metadata(path, period, start, end, month, days):
         assert dataset.lat.attrs["units"] == "degrees_north"
         assert dataset.lon.attrs["standard_name"] == "longitude"
         assert dataset.lon.attrs["units"] == "degrees_east"
+        for name in ("lat", "lon"):  # CF: coordinate variables have no missing values
+            assert "_FillValue" not in dataset[name].encoding
         assert "date_created" not in attrs  # no timestamp: rebuilding gives the same bytes
 
 
@@ -66,3 +71,18 @@ def test_anomaly_netcdf_command_writes_the_metadata_reproducibly(month_folder, t
         )
     check_metadata(outputs[0], "July 2024", "2024-07-01", "2024-07-31", "July", 31)
     assert outputs[0].read_bytes() == outputs[1].read_bytes()
+
+
+def test_partial_and_undated_periods_are_stated_not_hidden():
+    days = [f"MERGE_CPTEC_202407{day:02d}.grib2" for day in range(1, 32) if day != 11]
+    attrs = anomaly_global_attributes(days, "MERGE_CPTEC_acum_jul.nc")
+    assert attrs["period"] == "01 Jul 2024 to 31 Jul 2024"
+    assert attrs["comment"].endswith(
+        "Only 30 of the 31 days from 01 Jul 2024 to 31 Jul 2024 are present."
+    )
+
+    undated = anomaly_global_attributes(["daily.grib2"], "climatology.nc")
+    assert undated["period"] == "unknown period"
+    assert "time_coverage_start" not in undated and "time_coverage_end" not in undated
+    assert "climatology_month" not in undated
+    assert undated["comment"].endswith("so the period is unknown.")

@@ -90,11 +90,32 @@ def anomaly(files: Sequence[str | Path], climatology: str | Path) -> xr.DataArra
 
 
 def _period(files: Sequence[str | Path]) -> tuple[str, str, str]:
-    """``(period, first ISO date, last ISO date)`` of the daily files."""
+    """``(period, first ISO date, last ISO date)`` of the daily files; the dates are empty
+    when no file name carries one."""
     dates = dates_from_names(files)
     if not dates:
         return "unknown period", "", ""
     return format_period(dates), dates[0].isoformat(), dates[-1].isoformat()
+
+
+def _coverage_note(files: Sequence[str | Path]) -> str:
+    """A sentence on days missing from the period (only ``--allow-partial`` lets them in).
+
+    >>> _coverage_note(["MERGE_CPTEC_20240701.grib2", "MERGE_CPTEC_20240703.grib2"])
+    ' Only 2 of the 3 days from 01 Jul 2024 to 03 Jul 2024 are present.'
+    >>> _coverage_note(["daily.grib2"])
+    ' The daily file names carry no dates, so the period is unknown.'
+    """
+    dates = dates_from_names(files)
+    if not dates:
+        return " The daily file names carry no dates, so the period is unknown."
+    span = (dates[-1] - dates[0]).days + 1
+    if len(set(dates)) == span:
+        return ""
+    return (
+        f" Only {len(set(dates))} of the {span} days from {dates[0]:%d %b %Y} to "
+        f"{dates[-1]:%d %b %Y} are present."
+    )
 
 
 def anomaly_long_name(files: Sequence[str | Path], climatology: str | Path) -> str:
@@ -124,7 +145,7 @@ def anomaly_global_attributes(
     attrs: dict[str, str | int] = {
         "Conventions": "CF-1.8",
         "title": f"MERGE precipitation anomaly, {period}",
-        "institution": "Data: CPTEC/INPE (Centro de Previsão de Tempo e Estudos Climáticos)",
+        "institution": "CPTEC/INPE (Centro de Previsão de Tempo e Estudos Climáticos)",
         "source": (
             "CPTEC/INPE MERGE daily precipitation (rain gauges merged with GPM IMERG, 0.1 degree), "
             f"summed over {period}, minus the CPTEC MERGE monthly accumulated climatology"
@@ -141,7 +162,7 @@ def anomaly_global_attributes(
             "https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/CLIMATOLOGY/MONTHLY_ACCUMULATED/"
             "read-me.txt; it includes 2024. "
             "Daily totals are summed on the MERGE grid and interpolated linearly to the "
-            "climatology grid; missing values propagate."
+            "climatology grid; missing values propagate." + _coverage_note(files)
         ),
         "history": (
             f"merge-cptec {__version__} --product anomaly-netcdf: {len(files)} daily files, "
@@ -150,4 +171,7 @@ def anomaly_global_attributes(
     }
     if month is None:
         attrs.pop("climatology_month")
+    if not start:
+        attrs.pop("time_coverage_start")
+        attrs.pop("time_coverage_end")
     return attrs
