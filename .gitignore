@@ -16,3 +16,4 @@ htmlcov/
 data/merge_daily_*/
 data/MERGE_CPTEC_acum_*.nc
 *.part
+*.idx

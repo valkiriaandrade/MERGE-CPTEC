@@ -1,8 +1,4 @@
-# License for Code and Data
-
-## Code
-
-The code in this repository is licensed under the MIT License:
+MIT License:
 
 MIT License
 
@@ -25,13 +21,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-## Data
-
-The CPTEC MERGE product data in this repository are for restricted use and may not be sold. Use of the data is subject to the following conditions:
-
-- Commercial use of the CPTEC MERGE product data is not permitted.
-- The data may not be resold or redistributed commercially.
-- For more details about the data and its restrictions, see the [MERGE README](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/READ_ME-MERGE.pdf).
-
-For any questions about data use, please contact CPTEC/INPE at atende.cptec@inpe.br.

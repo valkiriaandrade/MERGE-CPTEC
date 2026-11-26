@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import calendar
+import http.client
 import logging
 import shutil
 import sys
@@ -44,6 +45,17 @@ logger = logging.getLogger("download_data")
 
 class DownloadError(RuntimeError):
     """A file could not be downloaded."""
+
+
+class IncompleteDownload(OSError):
+    """The server closed the connection before sending the whole file."""
+
+
+def expected_size(response) -> int | None:
+    """``Content-Length`` of a response, or ``None`` when the server did not send one."""
+    headers = getattr(response, "headers", None)
+    value = headers.get("Content-Length") if headers is not None else None
+    return int(value) if value and value.strip().isdigit() else None
 
 
 @dataclass(frozen=True)
@@ -93,8 +105,9 @@ def fetch(
 ) -> bool:
     """Download ``url`` to ``dest``; return False if it was skipped because it exists.
 
-    The file is written to ``<dest>.part`` first and renamed when complete, so an
-    interrupted download never leaves a truncated file behind.
+    The file is written to ``<dest>.part`` first and renamed only when complete: a
+    connection that drops early (fewer bytes than ``Content-Length``, or an incomplete
+    chunked response) is retried, so a truncated file never gets the final name.
 
     Raises:
         DownloadError: if the file does not exist on the server or every attempt fails.
@@ -110,6 +123,10 @@ def fetch(
             request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
             with opener(request, timeout=timeout) as response, partial.open("wb") as out:
                 shutil.copyfileobj(response, out)
+                expected = expected_size(response)
+            received = partial.stat().st_size
+            if expected is not None and received != expected:
+                raise IncompleteDownload(f"received {received} of {expected} bytes")
             partial.replace(dest)
             return True
         except urllib.error.HTTPError as error:
@@ -119,7 +136,7 @@ def fetch(
                     f"Not found on the server: {url} (check the date; the file may not exist)"
                 ) from error
             last_error = error
-        except (urllib.error.URLError, TimeoutError, OSError) as error:
+        except (urllib.error.URLError, http.client.HTTPException, TimeoutError, OSError) as error:
             partial.unlink(missing_ok=True)
             last_error = error
         if attempt < retries:

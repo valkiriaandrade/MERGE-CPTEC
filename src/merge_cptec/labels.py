@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import calendar
 import re
-from collections.abc import Iterable
+from collections.abc import Iterable, Sequence
 from datetime import date
 from pathlib import Path
 
@@ -67,13 +67,47 @@ def month_from_name(path: str | Path) -> str | None:
     return calendar.month_name[index]
 
 
+def month_coverage_problem(dates: Sequence[date]) -> str | None:
+    """Why ``dates`` are not exactly the days of one calendar month; ``None`` if they are.
+
+    >>> from datetime import timedelta
+    >>> july = [date(2024, 7, 1) + timedelta(days=n) for n in range(31)]
+    >>> month_coverage_problem(july) is None
+    True
+    >>> month_coverage_problem(july[:10] + july[11:])
+    '1 of 31 days of July 2024 missing (11 Jul)'
+    """
+    if not dates:
+        return "no dated daily files (names must contain YYYYMMDD)"
+    months = sorted({(d.year, d.month) for d in dates})
+    if len(months) > 1:
+        (y0, m0), (y1, m1) = months[0], months[-1]
+        return f"the files span {len(months)} months ({y0}-{m0:02d} to {y1}-{m1:02d})"
+    year, month = months[0]
+    days = calendar.monthrange(year, month)[1]
+    missing = sorted({date(year, month, d) for d in range(1, days + 1)} - set(dates))
+    if missing:
+        shown = ", ".join(f"{d:%d %b}" for d in missing[:5]) + (", …" if len(missing) > 5 else "")
+        return (
+            f"{len(missing)} of {days} days of {calendar.month_name[month]} {year} missing "
+            f"({shown})"
+        )
+    if len(dates) != len(set(dates)):
+        return f"{len(dates) - len(set(dates))} day(s) appear in more than one file"
+    return None
+
+
 def format_period(dates: Iterable[date]) -> str | None:
-    """Describe a list of dates: ``"July 2024"`` for one month, otherwise a date range."""
+    """Describe a list of dates: ``"July 2024"`` for a whole month, otherwise a date range.
+
+    A month with missing days is shown as the range of days present, so a partial month
+    is never titled as the whole month.
+    """
     dates = sorted(dates)
     if not dates:
         return None
     first, last = dates[0], dates[-1]
-    if (first.year, first.month) == (last.year, last.month):
+    if month_coverage_problem(dates) is None:
         return f"{calendar.month_name[first.month]} {first.year}"
     return f"{first:%d %b %Y} to {last:%d %b %Y}"
 

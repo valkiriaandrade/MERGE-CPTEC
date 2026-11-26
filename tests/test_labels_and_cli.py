@@ -73,7 +73,10 @@ def test_precipitation_unit_conversion(units, label, is_mm):
 def test_period_from_provider_file_names():
     names = [f"MERGE_CPTEC_202405{day:02d}.grib2" for day in (1, 15, 31)]
     assert dates_from_names(names)[-1] == date(2024, 5, 31)
-    assert format_period(dates_from_names(names)) == "May 2024"
+    # three days of May are not "May 2024"
+    assert format_period(dates_from_names(names)) == "01 May 2024 to 31 May 2024"
+    whole = [f"MERGE_CPTEC_202405{day:02d}.grib2" for day in range(1, 32)]
+    assert format_period(dates_from_names(whole)) == "May 2024"
     assert format_period([]) is None
     assert month_from_name("data/MERGE_CPTEC_acum_oct.nc") == "October"
     assert month_from_name("precipitation_anomaly_jun.nc") == "June"

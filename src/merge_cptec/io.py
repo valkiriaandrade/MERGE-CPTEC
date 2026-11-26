@@ -42,7 +42,7 @@ def read_field(path: str | Path, variable: str) -> xr.DataArray:
                 available = ", ".join(map(str, dataset.data_vars)) or "none"
                 raise ValueError(
                     f"Variable {variable!r} is missing from {path} (available: {available}); "
-                    "check --variable"
+                    "check that --input is the right kind of file for --product"
                 )
             field = dataset[variable].load()
     if not {"lat", "lon"}.issubset(field.dims):
@@ -65,17 +65,6 @@ def spatial(field: xr.DataArray) -> xr.DataArray:
                 )
             field = field.isel({dim: 0}, drop=True)
     return field.transpose("lat", "lon")
-
-
-def align_exact(*fields: xr.DataArray) -> tuple[xr.DataArray, ...]:
-    """Check that all fields share exactly the same grid.
-
-    Raises:
-        ValueError: if dimensions or coordinates differ.
-    """
-    if any(f.dims != fields[0].dims for f in fields[1:]):
-        raise ValueError("Incompatible dimensions between files; grids must match exactly")
-    return xr.align(*fields, join="exact")
 
 
 def read_grib(path: str | Path, name: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, str]:

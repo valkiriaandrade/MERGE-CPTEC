@@ -1,10 +1,11 @@
-import importlib
+import subprocess
+import sys
 
 import numpy as np
 import pytest
 import xarray as xr
 
-from merge_cptec.io import align_exact, files_in, read_field, save_netcdf, spatial
+from merge_cptec.io import files_in, read_field, save_netcdf, spatial
 
 
 def test_empty_directory(tmp_path):
@@ -31,16 +32,10 @@ def test_spatial_preserves_singleton_lat_and_rejects_ambiguous_time():
     assert spatial(field.isel(time=[0])).shape == (1, 2)
 
 
-def test_mismatched_coordinates_rejected():
-    a = xr.DataArray([1, 2], dims="lat", coords={"lat": [0, 1]})
-    b = xr.DataArray([3, 4], dims="lat", coords={"lat": [1, 2]})
-    with pytest.raises(ValueError):
-        align_exact(a, b)
-
-
-def test_import_has_no_output(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    importlib.import_module("merge_cptec.cli")
+def test_import_has_no_output(tmp_path):
+    # A fresh interpreter: in this test session the package is already imported.
+    code = "import merge_cptec.cli, merge_cptec.plotting, sys; sys.exit('matplotlib.pyplot' in sys.modules)"
+    subprocess.run([sys.executable, "-c", code], cwd=tmp_path, check=True)
     assert not list(tmp_path.iterdir())
 
 

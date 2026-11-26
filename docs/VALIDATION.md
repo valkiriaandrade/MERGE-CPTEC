@@ -18,7 +18,9 @@ probability.
 ## English translation and figure regeneration (v0.2.0)
 
 - Folders and files renamed to English; code, CLI help, messages, titles and labels
-  translated. Calculations, palettes (`YlGnBu`, `BrBG`) and class levels are unchanged.
+  translated. Calculations are unchanged. (This first English version used `YlGnBu` and
+  `BrBG`; commit 8680cb1 ("Restore the original colour scales") brought back the palettes and class
+  levels of the original scripts, listed in `src/merge_cptec/colour_scales.py`.)
 - New anomaly NetCDF files use the variable name `precipitation_anomaly`; the bundled
   sample files keep their original name and are still read.
 - All five figures in `figures/` regenerated with `make figures`.
@@ -65,3 +67,30 @@ probability.
     unchanged). Against a 64-bit write the values differ by at most 0.00003 mm, the maps are
     byte-identical, and each file is 1.5 MB instead of 3.1 MB.
 - Maps are drawn with filled contours (`contourf`) as in the original scripts.
+
+## Code review fixes (v0.3.0, 2026-11-26)
+
+- The `merge-cptec` command now checks the period itself, not only `make figures`:
+  `anomaly-netcdf` refuses daily files that are not one whole month (`--allow-partial`
+  overrides) or a climatology of another month (read from its `_jul`/`_jun` file name). An
+  accumulation of a partial month is still drawn, with a warning, and its title gives the
+  dates instead of the month name.
+- The categories map title no longer says "(mm)": the classes have no unit.
+- The read-me link in the README and the data terms pointed to `READ_ME-MERGE.pdf`, which
+  now returns 404; the current file is `MERGE_READ-ME.pdf`.
+- Climatology period: CPTEC's read-me for `CLIMATOLOGY/MONTHLY_ACCUMULATED` gives 1998–2024,
+  which includes the 2024 months mapped here; now stated in the README.
+- `make figures` rebuilt both anomaly NetCDF files byte-identical.
+- Categories map (`anomaly-spread`), approved change of the class bounds: the original script
+  used m + k·σ with k = −2…3, so "near average" was m to m + σ (entirely above the mean) and
+  "well below" started at m − σ while "well above" needed m + 2σ. The classes are now symmetric
+  about the mean: < m − 2σ, m − 2σ to m − σ, m ± σ, m + σ to m + 2σ, > m + 2σ, with the same
+  five colours; the colorbar labels give the bounds. `figures/precipitation_anomaly_spread_jun_2024.png`
+  regenerated: most of the country is now "near average"; the extremes are a dry area over
+  southern Paraná and Santa Catarina and wet areas over northern Rio Grande do Sul and Roraima.
+- New tests run `merge-cptec` end to end on tiny GRIB2 files (cloned from a real MERGE message,
+  rain varying differently with latitude and longitude) and small NetCDF files: accumulation,
+  exact linear interpolation to an offset climatology grid (missing outside the daily grid),
+  the whole-month and climatology-month checks, every map product, the masked mean/σ and the
+  symmetric classes, every `read_grib` rejection, truncated downloads and `make figures`
+  failures. Coverage, now with `scripts/` and branches: 85%.

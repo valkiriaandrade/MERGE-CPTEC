@@ -119,3 +119,41 @@ def test_make_figures_rebuilds_anomalies_before_maps(tmp_path, monkeypatch):
     products = [a[a.index("--product") + 1] for a in calls]
     assert products[0] == "anomaly-netcdf"
     assert products.index("anomaly") > 0 and "anomaly-netcdf" not in products[1:]
+
+
+class SizedResponse(FakeResponse):
+    """A response that announces ``size`` bytes in Content-Length (whatever it sends)."""
+
+    def __init__(self, body, size):
+        super().__init__(body)
+        self.headers = {"Content-Length": str(size)}
+
+
+def test_truncated_download_is_retried_and_never_kept(tmp_path, monkeypatch, download_module):
+    monkeypatch.setattr(download_module.time, "sleep", lambda seconds: None)
+    answers = [SizedResponse(b"DATA", 10), SizedResponse(b"DATA-whole", 10)]
+    dest = tmp_path / "file.bin"
+    opener = lambda request, timeout: answers.pop(0)  # noqa: E731
+    assert download_module.fetch("https://x/file.bin", dest, opener=opener) is True
+    assert dest.read_bytes() == b"DATA-whole" and not answers
+
+    always_short = lambda request, timeout: SizedResponse(b"DATA", 10)  # noqa: E731
+    with pytest.raises(download_module.DownloadError, match="received 4 of 10 bytes"):
+        download_module.fetch("https://x/b.bin", tmp_path / "b.bin", opener=always_short)
+    assert list(tmp_path.iterdir()) == [dest]  # no truncated file, no .part left behind
+
+
+def test_incomplete_chunked_response_is_retried(tmp_path, monkeypatch, download_module):
+    import http.client
+
+    monkeypatch.setattr(download_module.time, "sleep", lambda seconds: None)
+
+    class Broken(FakeResponse):
+        def read(self, *args):
+            raise http.client.IncompleteRead(b"DA", 8)
+
+    answers = [Broken(b""), FakeResponse(b"DATA")]
+    dest = tmp_path / "file.bin"
+    opener = lambda request, timeout: answers.pop(0)  # noqa: E731
+    assert download_module.fetch("https://x/file.bin", dest, opener=opener) is True
+    assert dest.read_bytes() == b"DATA"
