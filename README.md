@@ -26,6 +26,10 @@
   state boundaries, and draws state borders, coastline, lat/lon labels, units and a source credit.
 - Checks its inputs strictly: grids must match, GRIB units must be mm (kg m⁻²), and missing
   values propagate (days are never filled in).
+- Checks the period: `anomaly-netcdf` needs the daily files of one whole month and a
+  climatology of that same month (`--allow-partial` overrides the first check). An
+  accumulation of a partial month is allowed, with a warning, and titled with its dates
+  (e.g. "01 Jul 2024 to 15 Jul 2024"), never as the whole month.
 
 ## Data source
 
@@ -134,6 +138,7 @@ lines with a backtick (`` ` ``) instead of `\`, or write each command on one lin
 | `--region {brazil,north}` | `brazil` | Map domain; the Portuguese aliases `brasil` and `norte` are also accepted |
 | `--shapefile FILE` | – | State boundaries with a CRS, as `.shp` or zipped, for masking and borders (required by `anomaly-spread`); without it, Natural Earth borders are used |
 | `--period TEXT` | from file names | Period shown in the title, e.g. `"May 2024"` |
+| `--allow-partial` | off | Compute `anomaly-netcdf` even if the daily files are not one whole month |
 | `--title TEXT` | built from the data | Custom map title |
 | `--dpi N` | `200` | PNG resolution |
 | `--verbose` | off | Debug logging and full tracebacks |

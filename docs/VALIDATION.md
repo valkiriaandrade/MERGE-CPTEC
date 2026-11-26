@@ -67,3 +67,17 @@ probability.
     unchanged). Against a 64-bit write the values differ by at most 0.00003 mm, the maps are
     byte-identical, and each file is 1.5 MB instead of 3.1 MB.
 - Maps are drawn with filled contours (`contourf`) as in the original scripts.
+
+## Code review fixes (v0.3.0, 2026-11-26)
+
+- The `merge-cptec` command now checks the period itself, not only `make figures`:
+  `anomaly-netcdf` refuses daily files that are not one whole month (`--allow-partial`
+  overrides) or a climatology of another month (read from its `_jul`/`_jun` file name). An
+  accumulation of a partial month is still drawn, with a warning, and its title gives the
+  dates instead of the month name.
+- The categories map title no longer says "(mm)": the classes have no unit.
+- The read-me link in the README and the data terms pointed to `READ_ME-MERGE.pdf`, which
+  now returns 404; the current file is `MERGE_READ-ME.pdf`.
+- Climatology period: CPTEC's read-me for `CLIMATOLOGY/MONTHLY_ACCUMULATED` gives 1998–2024,
+  which includes the 2024 months mapped here; now stated in the README.
+- `make figures` rebuilt both anomaly NetCDF files byte-identical.

@@ -8,7 +8,8 @@ The anomaly NetCDF files are rebuilt first from the daily GRIB2 files and the mo
 climatology (``merge-cptec --product anomaly-netcdf``), so the anomaly maps always follow
 the raw data. If those inputs are missing or incomplete (run ``make data``), the existing
 NetCDF file is kept. Figures whose source data is missing are skipped with a warning and
-the existing image is kept.
+the existing image is kept. A figure that fails does not stop the others. The exit status
+is 1 if any figure was skipped or failed.
 """
 
 from __future__ import annotations
@@ -17,6 +18,7 @@ import argparse
 import calendar
 import logging
 import re
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -113,14 +115,30 @@ def build_anomalies(data_dir: Path) -> list[str]:
             "--climatology", str(climatology),
             "--output", str(data_dir / anomaly.output),
         ]  # fmt: skip
-        merge_cptec(args)
+        if not call(merge_cptec, args, anomaly.output):
+            kept.append(anomaly.output)
     return kept
 
 
-def build(data_dir: Path, figures_dir: Path, dpi: int) -> list[str]:
-    """Rebuild all figures with available data; return the names that were skipped."""
+def call(command, args: list[str], name: str) -> bool:
+    """Run a CLI entry point; log and return False if it fails (the others still run)."""
+    try:
+        command(args)
+    except SystemExit as error:  # the CLI reports expected errors with exit status 2
+        if not error.code:
+            return True
+        logger.error("Failed: %s", name)
+    except Exception:
+        logger.exception("Failed: %s", name)
+    else:
+        return True
+    return False
+
+
+def build(data_dir: Path, figures_dir: Path, dpi: int) -> tuple[list[str], list[str]]:
+    """Rebuild all figures with available data; return the names skipped and failed."""
     build_anomalies(data_dir)
-    skipped = []
+    skipped, failed = [], []
     shapefile = data_dir / "BR_UF_2022" / "BR_UF_2022.zip"
     for figure in FIGURES:
         source = data_dir / figure.source
@@ -144,11 +162,12 @@ def build(data_dir: Path, figures_dir: Path, dpi: int) -> list[str]:
         ]  # fmt: skip
         if figure.period:
             args += ["--period", figure.period]
-        merge_cptec(args)
-    return skipped
+        if not call(merge_cptec, args, figure.output):
+            failed.append(figure.output)
+    return skipped, failed
 
 
-def main() -> None:
+def main() -> int:
     """Command-line entry point."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--data-dir", type=Path, default=ROOT / "data")
@@ -156,10 +175,13 @@ def main() -> None:
     parser.add_argument("--dpi", type=int, default=200)
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
-    skipped = build(args.data_dir, args.figures_dir, args.dpi)
-    built = len(FIGURES) - len(skipped)
-    logger.info("Done: %d figure(s) regenerated, %d kept as-is", built, len(skipped))
+    skipped, failed = build(args.data_dir, args.figures_dir, args.dpi)
+    built = len(FIGURES) - len(skipped) - len(failed)
+    logger.info(
+        "Done: %d figure(s) regenerated, %d skipped, %d failed", built, len(skipped), len(failed)
+    )
+    return 1 if skipped or failed else 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
