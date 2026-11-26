@@ -69,7 +69,8 @@ python scripts/download_data.py --climatology jan feb      # climatologies only
 python scripts/download_data.py --dry-run                  # only list the URLs
 ```
 
-Downloaded files are git-ignored. A file missing on the server is reported by name, and the
+Downloaded files are git-ignored. A download cut off midway is retried, never saved under its
+final name. A file missing on the server is reported by name, and the
 script exits with an error after trying the rest. `make figures` refuses to build an
 accumulation from an incomplete month and asks you to run `make data`.
 
