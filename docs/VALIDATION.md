@@ -88,3 +88,9 @@ probability.
   five colours; the colorbar labels give the bounds. `figures/precipitation_anomaly_spread_jun_2024.png`
   regenerated: most of the country is now "near average"; the extremes are a dry area over
   southern Paraná and Santa Catarina and wet areas over northern Rio Grande do Sul and Roraima.
+- New tests run `merge-cptec` end to end on tiny GRIB2 files (cloned from a real MERGE message,
+  rain varying differently with latitude and longitude) and small NetCDF files: accumulation,
+  exact linear interpolation to an offset climatology grid (missing outside the daily grid),
+  the whole-month and climatology-month checks, every map product, the masked mean/σ and the
+  symmetric classes, every `read_grib` rejection, truncated downloads and `make figures`
+  failures. Coverage, now with `scripts/` and branches: 85%.

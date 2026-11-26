@@ -131,12 +131,9 @@ def plot_map(
             raise ValueError(
                 "The spatial-spread map needs a region mask; pass --shapefile (e.g. BR_UF_2022)"
             )
-        mean, std = np.nanmean(values), np.nanstd(values)
-        if std == 0:
-            raise ValueError("Spatial spread is zero: the field is constant over the region")
-        from .colour_scales import SPREAD_K
+        from .colour_scales import spread_levels
 
-        levels = mean + np.asarray(SPREAD_K) * std
+        levels = spread_levels(values)
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     with mpl.rc_context(STYLE):
