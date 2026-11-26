@@ -129,13 +129,21 @@ def read_grib(path: str | Path, name: str) -> tuple[np.ndarray, np.ndarray, np.n
     return selected
 
 
-def save_netcdf(field: xr.DataArray, output: str | Path) -> None:
+def save_netcdf(
+    field: xr.DataArray, output: str | Path, attrs: dict[str, str | int] | None = None
+) -> None:
     """Write ``field`` to ``output``, creating parent folders as needed.
 
     Floating-point values are stored as 32-bit floats (ample precision for rainfall in
-    mm, half the file size); coordinates are written unchanged.
+    mm, half the file size); coordinates are written unchanged and without a
+    ``_FillValue``, since CF coordinate variables have no missing values. ``attrs`` become
+    the file's global attributes.
     """
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    encoding = {field.name: {"dtype": "float32"}} if field.dtype.kind == "f" else None
-    field.to_netcdf(output, engine="h5netcdf", encoding=encoding)
+    encoding: dict[str, dict] = {str(name): {"_FillValue": None} for name in field.coords}
+    if field.dtype.kind == "f":
+        encoding[field.name] = {"dtype": "float32"}
+    dataset = field.to_dataset()
+    dataset.attrs = dict(attrs or {})
+    dataset.to_netcdf(output, engine="h5netcdf", encoding=encoding)
