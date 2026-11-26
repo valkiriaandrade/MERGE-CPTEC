@@ -10,6 +10,16 @@ from pathlib import Path
 
 PRODUCT = "MERGE"
 SOURCE_CREDIT = "Data: CPTEC/INPE MERGE"
+#: Base period of CPTEC's MERGE monthly climatologies (``CLIMATOLOGY/MONTHLY_ACCUMULATED``
+#: read-me); it includes 2024, the year of the anomalies in this repository.
+CLIMATOLOGY_PERIOD = "1998-2024"
+#: Reference paper of the MERGE product.
+MERGE_REFERENCE = (
+    "Rozante, J. R., Moreira, D. S., de Goncalves, L. G. G. and Vila, D. A. (2010). "
+    "Combining TRMM and surface observations of precipitation: technique and validation "
+    "over South America. Weather and Forecasting, 25(3), 885-894. "
+    "https://doi.org/10.1175/2010WAF2222325.1"
+)
 
 PRODUCT_NAMES: dict[str, str] = {
     "accumulation": "accumulated precipitation",

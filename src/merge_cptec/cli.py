@@ -23,7 +23,7 @@ from .labels import (
     units_label,
 )
 from .plotting import plot_map
-from .processing import ANOMALY_VARIABLE, accumulate, anomaly
+from .processing import ANOMALY_VARIABLE, accumulate, anomaly, anomaly_global_attributes
 from .regions import ALIASES, REGIONS, normalize_region
 
 logger = logging.getLogger(__name__)
@@ -87,7 +87,11 @@ def run(args: argparse.Namespace) -> None:
             logger.warning("%s only change maps; ignored for anomaly-netcdf", ", ".join(ignored))
         files = files_in(args.input, ".grib2")
         check_month(files, args.climatology, strict=True, allow_partial=args.allow_partial)
-        save_netcdf(anomaly(files, args.climatology), args.output)
+        save_netcdf(
+            anomaly(files, args.climatology),
+            args.output,
+            anomaly_global_attributes(files, args.climatology),
+        )
         return
     period = args.period
     if args.product == "accumulation":

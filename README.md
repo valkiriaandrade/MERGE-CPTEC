@@ -49,7 +49,7 @@ see [DATA_LICENSE.md](DATA_LICENSE.md)). State boundaries: IBGE, Malha Territori
 | `merge_daily_jul_2024/MERGE_CPTEC_202407DD.grib2` | Daily precipitation, July 2024 | committed sample (31 days) |
 | `MERGE_CPTEC_acum_jul.nc`, `MERGE_CPTEC_acum_oct.nc` | July and October climatologies (`precacum`) | committed |
 | `MERGE_CPTEC_acum_may.nc`, `MERGE_CPTEC_acum_jun.nc` | May and June climatologies | `make data` |
-| `precipitation_anomaly_jul.nc`, `precipitation_anomaly_jun.nc` | Anomaly fields (mm), July and June 2024, computed from the daily files and climatology | committed; rebuilt by `make figures` |
+| `precipitation_anomaly_jul.nc`, `precipitation_anomaly_jun.nc` | Anomaly fields (mm), July and June 2024, computed from the daily files and climatology; CF metadata records the period, the 1998–2024 climatology and the source | committed; rebuilt by `make figures` |
 | `BR_UF_2022/BR_UF_2022.zip` | IBGE 2022 state boundaries (zipped shapefile) | committed |
 
 The monthly climatologies are CPTEC's (`CLIMATOLOGY/MONTHLY_ACCUMULATED`), computed over

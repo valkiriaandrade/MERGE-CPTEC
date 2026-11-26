@@ -94,3 +94,19 @@ probability.
   the whole-month and climatology-month checks, every map product, the masked mean/σ and the
   symmetric classes, every `read_grib` rejection, truncated downloads and `make figures`
   failures. Coverage, now with `scripts/` and branches: 85%.
+
+## Metadata in the anomaly NetCDF files (2026-11-26)
+
+- `anomaly-netcdf` now writes CF-1.8 metadata, so each file says what it holds:
+  - file attributes: `title`, `period` (e.g. "July 2024"), `time_coverage_start` /
+    `time_coverage_end` (the first and last daily file), `climatology_period` = 1998-2024 with
+    `climatology_month` and `climatology_file`, `institution`, `source` (CPTEC/INPE MERGE),
+    `references` (Rozante et al., 2010, with its DOI), a `comment` citing CPTEC's climatology
+    read-me, and a `history` line with the command (no timestamp, so a rebuild gives the same
+    bytes);
+  - variable: `long_name` ("precipitation anomaly: July 2024 total minus the 1998-2024 July
+    mean") and `units` = mm; `lat`/`lon` get their CF `standard_name`.
+- Both committed files were rebuilt with `make figures`: the values, data type and grid are
+  identical to the previous files (compared element by element); only the attributes are new.
+  A second `make figures` run gives the same bytes.
+- All five PNG figures are byte-identical to the previous ones.
