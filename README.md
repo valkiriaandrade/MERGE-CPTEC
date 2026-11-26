@@ -32,10 +32,10 @@
 [**MERGE**](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/) is CPTEC/INPE's daily
 precipitation analysis for South America. It merges rain-gauge observations with GPM IMERG
 satellite estimates on a 0.1° (~10 km) grid and is a standard reference for monitoring rainfall
-in Brazil. See the [MERGE read-me](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/READ_ME-MERGE.pdf).
+in Brazil (Rozante et al., 2010). See the [MERGE read-me](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/MERGE_READ-ME.pdf).
 
 *Data: CPTEC/INPE – MERGE, https://ftp.cptec.inpe.br/modelos/tempo/MERGE/ (non-commercial use;
-see [LICENSE](LICENSE)).*
+see [DATA_LICENSE.md](DATA_LICENSE.md)). State boundaries: IBGE, Malha Territorial 2022.*
 
 | File / folder in `data/` | Content | In the repo? |
 |---|---|---|
@@ -46,6 +46,10 @@ see [LICENSE](LICENSE)).*
 | `MERGE_CPTEC_acum_may.nc`, `MERGE_CPTEC_acum_jun.nc` | May and June climatologies | `make data` |
 | `precipitation_anomaly_jul.nc`, `precipitation_anomaly_jun.nc` | Anomaly fields (mm), July and June 2024, computed from the daily files and climatology | committed; rebuilt by `make figures` |
 | `BR_UF_2022/BR_UF_2022.zip` | IBGE 2022 state boundaries (zipped shapefile) | committed |
+
+The monthly climatologies are CPTEC's (`CLIMATOLOGY/MONTHLY_ACCUMULATED`), computed over
+**1998–2024** according to its read-me. That period includes 2024, so the 2024 anomalies are
+measured against a mean that contains them (one year in 27).
 
 ## Get the data
 
@@ -93,7 +97,7 @@ python -m pip install -e ".[dev]"  # or: make install
 
 ```bash
 make data                          # fetch the raw files that are not committed
-SHP=data/BR_UF_2022/BR_UF_2022.zip
+SHP=data/BR_UF_2022/BR_UF_2022.zip  # PowerShell: $SHP = "data/BR_UF_2022/BR_UF_2022.zip"
 
 # May 2024 accumulated precipitation over Brazil
 merge-cptec --product accumulation --input data/merge_daily_may_2024 \
@@ -112,6 +116,9 @@ merge-cptec --product anomaly --input output/anomaly_jul_2024.nc --period "July 
 # Rebuild every figure in figures/
 make figures                       # or: python scripts/make_figures.py
 ```
+
+The examples use bash syntax. In PowerShell, set `$SHP` as in the comment and end continued
+lines with a backtick (`` ` ``) instead of `\`, or write each command on one line.
 
 ## CLI options
 
@@ -137,7 +144,7 @@ The `scripts/` folder has shortcuts that preset `--product` (and `--region`):
 ## Project structure
 
 ```
-MERGE-CPTEC/
+merge-rainfall-maps/
 ├── data/                  # sample MERGE inputs, IBGE boundaries; `make data` adds the rest
 ├── figures/               # published maps (rebuilt with `make figures`)
 ├── scripts/
@@ -149,10 +156,12 @@ MERGE-CPTEC/
 │   ├── processing.py      # accumulation and anomaly
 │   ├── io.py              # GRIB2/NetCDF reading and grid checks
 │   ├── plotting.py        # shared map style and rendering
+│   ├── colour_scales.py   # palettes and class levels of each product
 │   ├── labels.py          # titles, periods and unit labels
 │   └── regions.py         # map domains and region aliases
 ├── tests/                 # pytest suite (synthetic data + one real GRIB2 file)
 ├── docs/                  # validation notes and project history
+├── DATA_LICENSE.md        # terms of the MERGE, IBGE and Natural Earth data
 ├── Makefile
 └── pyproject.toml
 ```
@@ -176,8 +185,8 @@ fixture blocks network access. `make data` is a manual step.
 ## License
 
 Code: [MIT](LICENSE) © Valkiria Andrade.
-MERGE data: CPTEC/INPE, non-commercial use only; see [LICENSE](LICENSE) and the
-[MERGE read-me](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/READ_ME-MERGE.pdf).
+MERGE data: CPTEC/INPE, non-commercial use only; IBGE state boundaries; Natural Earth
+borders. See [DATA_LICENSE.md](DATA_LICENSE.md) and the [MERGE read-me](https://ftp.cptec.inpe.br/modelos/tempo/MERGE/GPM/MERGE_READ-ME.pdf).
 
 ---
 

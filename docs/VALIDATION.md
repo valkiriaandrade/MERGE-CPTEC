@@ -18,7 +18,9 @@ probability.
 ## English translation and figure regeneration (v0.2.0)
 
 - Folders and files renamed to English; code, CLI help, messages, titles and labels
-  translated. Calculations, palettes (`YlGnBu`, `BrBG`) and class levels are unchanged.
+  translated. Calculations are unchanged. (This first English version used `YlGnBu` and
+  `BrBG`; commit 8680cb1 ("Restore the original colour scales") brought back the palettes and class
+  levels of the original scripts, listed in `src/merge_cptec/colour_scales.py`.)
 - New anomaly NetCDF files use the variable name `precipitation_anomaly`; the bundled
   sample files keep their original name and are still read.
 - All five figures in `figures/` regenerated with `make figures`.
