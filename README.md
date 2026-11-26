@@ -20,7 +20,8 @@
 - **Accumulation**: sums the daily MERGE GRIB2 files in a folder into a period total (mm).
 - **Anomaly**: subtracts the monthly climatology (`precacum`) from that total and saves it as
   NetCDF (`anomaly-netcdf`), then maps it in mm (`anomaly`) or in classes of the field's
-  spatial mean ± standard deviation (`anomaly-spread`).
+  spatial mean m ± standard deviation σ (`anomaly-spread`): well below (< m − 2σ), below
+  (m − 2σ to m − σ), near average (m ± σ), above (m + σ to m + 2σ), well above (> m + 2σ).
 - **Climatology**: maps a monthly climatology file.
 - Masks the maps to Brazil or to the North region (AC, AP, AM, PA, RO, RR, TO) with the IBGE
   state boundaries, and draws state borders, coastline, lat/lon labels, units and a source credit.

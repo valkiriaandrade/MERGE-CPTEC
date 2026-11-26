@@ -23,9 +23,21 @@ BRAZIL_ACCUMULATION_LEVELS = (0, 20, 50, 80, 100, 150, 200, 300, 400, 500)
 #: Original ``anomalia_mm.py``.
 ANOMALY_LEVELS = (-400, -300, -200, -100, -75, -50, -25, -5, 0, 5, 25, 50, 75, 100, 200, 300, 400)
 
-#: Original ``anomalia_desvio.py``: five classes of the spatial mean ± k standard deviations.
+#: Five classes of the field's spatial mean m ± k standard deviations σ (colours of the
+#: original ``anomalia_desvio.py``). The classes are symmetric about the mean: below
+#: m − 2σ, m − 2σ to m − σ, m ± σ, m + σ to m + 2σ, above m + 2σ. (The original script
+#: used m + k·σ with k = −2…3, so "near average" was m to m + σ, entirely above the mean.)
 SPREAD_COLOURS = ("#E73B29", "#CADF00", "#00D03F", "#00B9DD", "#4E54D7")
-SPREAD_LABELS = ("Well below", "Below", "Near average", "Above", "Well above")
+SPREAD_LABELS = (
+    "Well below\n(< −2σ)",
+    "Below\n(−2σ to −σ)",
+    "Near average\n(±σ)",
+    "Above\n(σ to 2σ)",
+    "Well above\n(> 2σ)",
+)
+#: Class boundaries in units of σ around the mean. The outer ±3 only close the end classes
+#: for drawing: values beyond them keep the end colours ("well below/above" are open-ended).
+SPREAD_K = (-3.0, -2.0, -1.0, 1.0, 2.0, 3.0)
 
 
 @dataclass(frozen=True)
@@ -42,7 +54,7 @@ def colour_scale(product: str, region: str = "brazil") -> ColourScale:
     """Return the original colour scale for ``product`` (and ``region`` for accumulations).
 
     For ``anomaly-spread`` the levels are placeholders: the plot replaces them with the
-    field's spatial mean + k·std (k = −2…3), as in the original script.
+    field's spatial mean + k·std for k in :data:`SPREAD_K`.
     """
     from matplotlib import colormaps
     from matplotlib.colors import ListedColormap

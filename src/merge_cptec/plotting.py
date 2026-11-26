@@ -93,7 +93,8 @@ def plot_map(
         extend_colours: reserve distinct colours of ``cmap`` for the out-of-range
             arrows, as ``contourf(..., extend=...)`` does.
         spatial_spread: replace ``levels`` with the masked field's mean + k·std
-            (k = −2…3), i.e. classes of spatial spread. Requires ``shapefile``.
+            (k in ``colour_scales.SPREAD_K``, symmetric about the mean), i.e. classes
+            of spatial spread. Requires ``shapefile``.
 
     Raises:
         ValueError: on inconsistent grids, bad shapefiles or an all-missing field.
@@ -133,7 +134,9 @@ def plot_map(
         mean, std = np.nanmean(values), np.nanstd(values)
         if std == 0:
             raise ValueError("Spatial spread is zero: the field is constant over the region")
-        levels = mean + np.arange(-2, 4) * std
+        from .colour_scales import SPREAD_K
+
+        levels = mean + np.asarray(SPREAD_K) * std
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     with mpl.rc_context(STYLE):

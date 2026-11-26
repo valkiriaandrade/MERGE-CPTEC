@@ -81,3 +81,10 @@ probability.
 - Climatology period: CPTEC's read-me for `CLIMATOLOGY/MONTHLY_ACCUMULATED` gives 1998–2024,
   which includes the 2024 months mapped here; now stated in the README.
 - `make figures` rebuilt both anomaly NetCDF files byte-identical.
+- Categories map (`anomaly-spread`), approved change of the class bounds: the original script
+  used m + k·σ with k = −2…3, so "near average" was m to m + σ (entirely above the mean) and
+  "well below" started at m − σ while "well above" needed m + 2σ. The classes are now symmetric
+  about the mean: < m − 2σ, m − 2σ to m − σ, m ± σ, m + σ to m + 2σ, > m + 2σ, with the same
+  five colours; the colorbar labels give the bounds. `figures/precipitation_anomaly_spread_jun_2024.png`
+  regenerated: most of the country is now "near average"; the extremes are a dry area over
+  southern Paraná and Santa Catarina and wet areas over northern Rio Grande do Sul and Roraima.
